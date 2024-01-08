@@ -12,7 +12,7 @@ const requestHandler = (req, res) => {
         return res.end(); // this will send the response back to the client
     }
     
-    if(url === '/message' && method === 'POST'){
+    else if(url === '/message' && method === 'POST'){
         const body = [];
     
         req.on('data', (chunk) => { // this will be fired whenever a new chunk is ready to be read
@@ -30,13 +30,13 @@ const requestHandler = (req, res) => {
             });
         });
     }
-    
-    res.setHeader('Content-Type', 'text/html');
-    res.write('<html>');
-    res.write('<head><title>My First Page</title></head>');
-    res.write('<body><h1>Hello from my Node.js Server!</h1></body>');
-    res.write('</html>');
-    res.end(); // this will send the response back to the client
+    else{
+        res.write('<html>');
+        res.write('<head><title>My First Page</title></head>');
+        res.write('<body><h1>Hello from my Node.js Server!</h1></body>');
+        res.write('</html>');
+        return res.end(); // this will send the response back to the client
+    }
 }
 
 module.exports = requestHandler; // this will export the requestHandler function
