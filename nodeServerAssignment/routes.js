@@ -41,10 +41,11 @@ const requestHandler = (req, res) => {
         req.on('end', () => {
             const parsedBody = Buffer.concat(body).toString(); // this will convert the body to a string
             const user = parsedBody.split('=')[1]; // this will give us the user name
+            console.log(user);
 
             fs.writeFile('users.txt', user, (err) => {
                 res.writeHead(302, {'location': '/'});
-                res.end();
+                return res.end();
             });
 
         });
