@@ -1,9 +1,13 @@
 //const http = require('http'); //without express
-/*
+
 const express = require('express');
+const bodyParser = require('body-parser'); // this is a package that allows us to parse the body of the request
+
+const adminRoutes = require('./routes/admin');
+const shopRoutes = require("./routes/shop");
 
 const app = express(); // this initializes a new express object where the framwework stores and manages things for us
-*/
+
 /*
  Express JS is all about middleware
  Incoming requests are funneled through a bunch of functions
@@ -18,17 +22,17 @@ const app = express(); // this initializes a new express object where the framwe
 //     console.log('In the middleware!');
 //     next(); // this allows the request to continue to the next middleware in line
 // }); // next is a function that will be passed to the middleware function by express)); 
-/*
-app.use('/add-product', (req, res, next) => { //if it starts with /add-product, it will execute this middleware
-    console.log('In another middleware');
-    res.send('<h1>Hello from Express! Add product</h1>');
-});
 
-app.use("/", (req, res, next) => { //if it starts with /, it will execute this middleware. other routes must be on top
-    console.log('In the next middleware');
-    res.send('<h1>Hello from Express!</h1>');
-});
-*/
+// Middleware functions are executed in the order they are defined
+
+//urlencoded is a function that returns a middleware function
+app.use(bodyParser.urlencoded({extended: false}));
+
+app.use(adminRoutes); // this will register the adminRoutes middleware
+
+app.use(shopRoutes);
+
+
 //const routes = require('./routes_vanilla-node'); // we can omit the .js extension
 
 // function rqListener(req, res){
@@ -39,4 +43,4 @@ app.use("/", (req, res, next) => { //if it starts with /, it will execute this m
 
 // const server = http.createServer(app); // we can also use an anonymous function
 // server.listen(3000); // this will keep the server running and listening for incoming requests
-//app.listen(3000); // this is a shortcut for the above code
+app.listen(3000); // this is a shortcut for the above code
