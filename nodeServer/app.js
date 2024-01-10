@@ -28,6 +28,7 @@ const app = express(); // this initializes a new express object where the framwe
 
 //urlencoded is a function that returns a middleware function
 app.use(bodyParser.urlencoded({extended: false}));
+app.use(express.static(path.join(__dirname, "public"))); // this allows us to serve static files like css files
 
 app.use("/admin", adminRoutes); // this will register the adminRoutes middleware
 app.use(shopRoutes);
