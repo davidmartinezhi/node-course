@@ -1,13 +1,15 @@
 const path = require('path');
 const express = require('express');
 
+const rootDir = require("../util/path"); // this will give us the path to the root directory of our project
+
 const router = express.Router(); //mini express app that we can export
 
 // /admin/add-product => GET
 
 //on the router we register things like get, post, use, etc
 router.get('/add-product', (req, res, next) => { //if it starts with /add-product, it will execute this middleware
-    res.sendFile(path.join(__dirname, "../", "views", "add-product.html"));
+    res.sendFile(path.join(rootDir, "views", "add-product.html"));
 });
 
 // /admin/add-product => POST
