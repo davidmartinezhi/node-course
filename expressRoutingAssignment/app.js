@@ -14,6 +14,12 @@ app.use(express.static(__dirname + "/public"));
 
 //add routes
 
+//catch all routes
+app.use("/", (req, res, next) => {
+    console.log("page not found");
+    res.status(404).sendFile(__dirname + "/views/404.html");
+});
+
 
 //listen to the port 3001
 app.listen(3001, () => {
