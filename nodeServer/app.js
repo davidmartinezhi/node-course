@@ -29,8 +29,12 @@ const app = express(); // this initializes a new express object where the framwe
 app.use(bodyParser.urlencoded({extended: false}));
 
 app.use(adminRoutes); // this will register the adminRoutes middleware
-
 app.use(shopRoutes);
+
+app.use("/", (req, res, next) => { //if it starts with /, it will execute this middleware. other routes must be on top
+    console.log('In the next middleware');
+    res.status(404).send('<h1>Page not found :(</h1>');
+});
 
 
 //const routes = require('./routes_vanilla-node'); // we can omit the .js extension
