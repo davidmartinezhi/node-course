@@ -1,4 +1,5 @@
 //const http = require('http'); //without express
+const path = require('path'); // this is a core module
 
 const express = require('express');
 const bodyParser = require('body-parser'); // this is a package that allows us to parse the body of the request
@@ -28,12 +29,12 @@ const app = express(); // this initializes a new express object where the framwe
 //urlencoded is a function that returns a middleware function
 app.use(bodyParser.urlencoded({extended: false}));
 
-app.use(adminRoutes); // this will register the adminRoutes middleware
+app.use("/admin", adminRoutes); // this will register the adminRoutes middleware
 app.use(shopRoutes);
 
 app.use("/", (req, res, next) => { //if it starts with /, it will execute this middleware. other routes must be on top
     console.log('In the next middleware');
-    res.status(404).send('<h1>Page not found :(</h1>');
+    res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
 });
 
 
