@@ -12,7 +12,7 @@ const products = [];
 //on the router we register things like get, post, use, etc
 router.get('/add-product', (req, res, next) => { //if it starts with /add-product, it will execute this middleware
     //res.sendFile(path.join(rootDir, "views", "add-product.html"));
-    res.render("add-product", {docTitle: "Add Product", path: "/admin/add-product"});
+    res.render("add-product", {docTitle: "Add Product", path: "/admin/add-product", formsCSS: true, productCSS: true, activeProduct: true});
 });
 
 // /admin/add-product => POST
