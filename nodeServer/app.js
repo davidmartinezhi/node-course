@@ -4,11 +4,13 @@ const path = require('path'); // this is a core module
 const express = require('express');
 const bodyParser = require('body-parser'); // this is a package that allows us to parse the body of the request
 
-const adminRoutes = require('./routes/admin');
+const adminData = require('./routes/admin');
 const shopRoutes = require("./routes/shop");
 
 const app = express(); // this initializes a new express object where the framwework stores and manages things for us
 
+app.set("view engine", "pug"); // this allows us to set any value globally that express will manage for us
+app.set("views", "views"); // this allows us to set any value globally that express will manage for us
 /*
  Express JS is all about middleware
  Incoming requests are funneled through a bunch of functions
@@ -30,7 +32,7 @@ const app = express(); // this initializes a new express object where the framwe
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, "public"))); // this allows us to serve static files like css files
 
-app.use("/admin", adminRoutes); // this will register the adminRoutes middleware
+app.use("/admin", adminData.routes); // this will register the adminRoutes middleware
 app.use(shopRoutes);
 
 app.use("/", (req, res, next) => { //if it starts with /, it will execute this middleware. other routes must be on top
