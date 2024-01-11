@@ -3,13 +3,20 @@ const path = require('path'); // this is a core module
 
 const express = require('express');
 const bodyParser = require('body-parser'); // this is a package that allows us to parse the body of the request
+const expressHbs = require("express-handlebars");
 
 const adminData = require('./routes/admin');
 const shopRoutes = require("./routes/shop");
 
 const app = express(); // this initializes a new express object where the framwework stores and manages things for us
 
-app.set("view engine", "pug"); // this allows us to set any value globally that express will manage for us
+//pug template engine
+//app.set("view engine", "pug"); // this allows us to set any value globally that express will manage for us
+
+//express-handlebars template engine
+app.engine("handlebars", expressHbs({layoutsDir: "views/layouts/", defaultLayout: "main-layout"}));
+app.set("view engine", "handlebars");
+
 app.set("views", "views"); // this allows us to set any value globally that express will manage for us
 /*
  Express JS is all about middleware
