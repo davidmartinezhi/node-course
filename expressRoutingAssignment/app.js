@@ -1,7 +1,12 @@
+const path = require('path');
 
 // 3th party modules
 const express = require('express');
 const bodyParser = require('body-parser');
+
+//import routes
+const homeRoutes = require('./routes/home');
+const userRoutes = require('./routes/user');
 
 //initiate express
 const app = express();
@@ -10,14 +15,16 @@ const app = express();
 app.use(bodyParser.urlencoded({extended: false}));
 
 //add static middleware
-app.use(express.static(__dirname + "/public"));
+app.use(express.static(path.join(__dirname, "public")));
 
 //add routes
+app.use("/user", userRoutes);
+app.use(homeRoutes);
 
 //catch all routes
 app.use("/", (req, res, next) => {
     console.log("page not found");
-    res.status(404).sendFile(__dirname + "/views/404.html");
+    res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
 });
 
 
