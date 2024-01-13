@@ -8,6 +8,9 @@ const bodyParser = require("body-parser"); // this is a package that allows us t
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 
+//controllers
+const errorController = require("./controllers/error");
+
 const app = express(); // this initializes a new express object where the framwework stores and manages things for us
 
 //pug template engine
@@ -49,12 +52,7 @@ app.use(express.static(path.join(__dirname, "public"))); // this allows us to se
 app.use("/admin", adminRoutes); // this will register the adminRoutes middleware
 app.use(shopRoutes);
 
-app.use("/", (req, res, next) => {
-  //if it starts with /, it will execute this middleware. other routes must be on top
-  //console.log('In the next middleware');
-  //res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
-  res.status(404).render("404", { docTitle: "Page Not Found", path: "" });
-});
+app.use("/", errorController.get404);
 
 //const routes = require('./routes_vanilla-node'); // we can omit the .js extension
 
