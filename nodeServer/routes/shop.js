@@ -2,23 +2,10 @@ const path = require("path");
 
 const express = require("express");
 
-const rootDir = require("../util/path"); // this will give us the path to the root directory of our project
-const adminData = require("./admin");
+const productsController = require("../controllers/products");
 
 const router = express.Router(); //mini express app that we can export
 
-router.get("/", (req, res, next) => {
-  //if it starts with /, it will execute this middleware. other routes must be on top
-  const products = adminData.products;
-
-  res.render("shop", {
-    prods: products,
-    docTitle: "Shop",
-    path: "/",
-    hasProducts: products.length > 0,
-    activeShop: true,
-    productCSS: true
-  });
-});
+router.get("/", productsController.getProducts);
 
 module.exports = router;

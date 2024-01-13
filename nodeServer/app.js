@@ -5,7 +5,7 @@ const express = require("express");
 const bodyParser = require("body-parser"); // this is a package that allows us to parse the body of the request
 //const expressHbs = require("express-handlebars");
 
-const adminData = require("./routes/admin");
+const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 
 const app = express(); // this initializes a new express object where the framwework stores and manages things for us
@@ -46,14 +46,14 @@ app.set("views", "views"); // this allows us to set any value globally that expr
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public"))); // this allows us to serve static files like css files
 
-app.use("/admin", adminData.routes); // this will register the adminRoutes middleware
+app.use("/admin", adminRoutes); // this will register the adminRoutes middleware
 app.use(shopRoutes);
 
 app.use("/", (req, res, next) => {
   //if it starts with /, it will execute this middleware. other routes must be on top
   //console.log('In the next middleware');
   //res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
-  res.status(404).render("404", { docTitle: "Page Not Found" });
+  res.status(404).render("404", { docTitle: "Page Not Found", path: "" });
 });
 
 //const routes = require('./routes_vanilla-node'); // we can omit the .js extension
