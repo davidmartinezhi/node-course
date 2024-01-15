@@ -1,6 +1,5 @@
 const Product = require("../models/product");
 
-
 /**
  * Get all products and render the product list view.
  * @param {Object} req - The request object.
@@ -43,6 +42,19 @@ exports.getCart = (req, res, next) => {
   res.render("shop/cart", {
     docTitle: "Your Cart",
     path: "/cart",
+  });
+};
+
+/**
+ * Render the orders view.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ * @param {Function} next - The next middleware function.
+ */
+exports.getOrders = (req, res, next) => {
+  res.render("shop/orders", {
+    docTitle: "Your Orders",
+    path: "/orders",
   });
 };
 
