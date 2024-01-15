@@ -1,4 +1,4 @@
-const path = require("path");
+//const path = require("path");
 
 const express = require("express");
 
@@ -9,6 +9,8 @@ const router = express.Router(); //mini express app that we can export
 router.get("/", shopController.getIndex);
 
 router.get("/products", shopController.getProducts);
+
+router.get("/products/:productId", shopController.getProduct);
 
 router.get("/cart", shopController.getCart);
 
