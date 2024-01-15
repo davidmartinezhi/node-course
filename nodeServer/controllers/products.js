@@ -3,7 +3,7 @@ const Product = require("../models/product");
 exports.getAddProduct = (req, res, next) => {
   //if it starts with /add-product, it will execute this middleware
   //res.sendFile(path.join(rootDir, "views", "add-product.html"));
-  res.render("add-product", {
+  res.render("admin/add-product", {
     docTitle: "Add Product",
     path: "/admin/add-product",
     formsCSS: true,
@@ -22,7 +22,7 @@ exports.postAddProduct = (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
   Product.fetchAll((products) => {
-    res.render("shop", {
+    res.render("shop/product-list", {
       prods: products,
       docTitle: "Shop",
       path: "/",
