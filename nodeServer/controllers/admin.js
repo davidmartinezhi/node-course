@@ -1,5 +1,6 @@
 const Product = require("../models/product");
 
+
 exports.getAddProduct = (req, res, next) => {
   //if it starts with /add-product, it will execute this middleware
   //res.sendFile(path.join(rootDir, "views", "add-product.html"));
@@ -18,17 +19,4 @@ exports.postAddProduct = (req, res, next) => {
   const product = new Product(req.body.title); // this will create a new product object
   product.save(); // this will save the product to the products array
   res.redirect("/");
-};
-
-exports.getProducts = (req, res, next) => {
-  Product.fetchAll((products) => {
-    res.render("shop/product-list", {
-      prods: products,
-      docTitle: "Shop",
-      path: "/",
-      hasProducts: products.length > 0,
-      activeShop: true,
-      productCSS: true,
-    });
-  }); // this will fetch all the products
 };
