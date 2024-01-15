@@ -13,7 +13,7 @@ const router = express.Router(); //mini express app that we can export
 router.get("/add-product", adminController.getAddProduct);
 
 // /admin/products => GET
-router.get("/products");
+router.get("/products", adminController.getProducts);
 
 // /admin/add-product => POST
 //app.get() is a method that allows us to register a new middleware function that will only be executed for incoming GET requests
