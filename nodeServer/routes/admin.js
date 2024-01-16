@@ -19,4 +19,7 @@ router.get("/products", adminController.getProducts);
 //app.get() is a method that allows us to register a new middleware function that will only be executed for incoming GET requests
 router.post("/add-product", adminController.postAddProduct);
 
+// /admin/edit-product => GET
+router.get("/edit-product/:productId", adminController.getEditProduct);
+
 module.exports = router;
