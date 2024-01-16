@@ -11,6 +11,7 @@ exports.getAddProduct = (req, res, next) => {
   res.render("admin/edit-product", {
     docTitle: "Add Product",
     path: "/admin/add-product",
+    editing: false
   });
 };
 
@@ -38,10 +39,20 @@ exports.getEditProduct = (req, res, next) => {
     return res.redirect("/");
   }
 
-  res.render("admin/edit-product", {
-    docTitle: "Edit Product",
-    path: "/admin/edit-product",
-    editing: editMode
+  // Extract the product id from the url
+  const prodId = req.params.productId;
+
+  // Fetch the product from the database
+  Product.findById(prodId, product => {
+    if(!product){
+      return res.redirect("/");
+    }
+    res.render("admin/edit-product", {
+      docTitle: "Edit Product",
+      path: "/admin/edit-product",
+      editing: editMode,
+      product: product
+    });
   });
 };
 
