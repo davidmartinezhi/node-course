@@ -52,6 +52,11 @@ module.exports = class Cart {
       } else {
         const updatedCart = { ...JSON.parse(fileContent) }; // parse the file content into a javascript object
         const product = updatedCart.products.find((prod) => prod.id === id); // this will return the product to be deleted
+        
+        if (!product) {
+          return; // if there is no product to be deleted, then we don't have a cart yet
+        }
+
         const productQty = product.qty; // this will store the quantity of the product to be deleted
 
         //update the cart
