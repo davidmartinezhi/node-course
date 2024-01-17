@@ -40,9 +40,30 @@ exports.getIndex = (req, res, next) => {
  * @param {Function} next - The next middleware function.
  */
 exports.getCart = (req, res, next) => {
-  res.render("shop/cart", {
-    docTitle: "Your Cart",
-    path: "/cart",
+  Cart.getCart((cart) => {
+    // this will fetch the cart
+    Product.fetchAll((products) => {
+      // this will fetch all the products
+
+      const cartProducts = []; // this will store the products in the cart
+
+      for (product of products) {
+        const cartProductData = cart.products.find(
+          (prod) => prod.id === product.id
+        ); // this will find the product in the cart
+        if (cartProductData) {
+          // this will check if the product is in the cart
+          //product.qty = cart.products.find(prod => prod.id === product.id).qty; // this will set the quantity of the product
+          cartProducts.push({ productData: product, qty: cartProductData.qty }); // this will add the product to the cart
+        }
+      }
+
+      res.render("shop/cart", {
+        docTitle: "Your Cart",
+        path: "/cart",
+        products: cartProducts,
+      });
+    });
   });
 };
 
@@ -72,23 +93,22 @@ exports.getCheckout = (req, res, next) => {
   });
 };
 
-
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
-  Product.findById(prodId, product => {
-   // console.log(product);
+  Product.findById(prodId, (product) => {
+    // console.log(product);
     res.render("shop/product-detail", {
       product: product,
       docTitle: product.title,
-      path: "/products"
+      path: "/products",
     });
   });
-}
+};
 
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.findById(prodId, product => {
+  Product.findById(prodId, (product) => {
     Cart.addProduct(prodId, product.price);
   });
   res.redirect("/cart");
-}
+};
