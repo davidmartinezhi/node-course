@@ -73,6 +73,12 @@ exports.postEditProduct = (req, res, next) => {
   res.redirect("/admin/products");
 };
 
+exports.postDeleteProduct = (req, res, next) => {
+  const prodId = req.params.productId; // this will extract the product id from the url
+  Product.deleteById(prodId); // this will delete the product from the database
+  res.redirect("/admin/products");
+};
+
 exports.getProducts = (req, res, next) => {
   Product.fetchAll((products) => {
     res.render("admin/products", {
@@ -82,4 +88,5 @@ exports.getProducts = (req, res, next) => {
     });
   }); // this will fetch all the products
 };
+
 
