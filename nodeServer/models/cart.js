@@ -55,11 +55,8 @@ module.exports = class Cart {
         const productQty = product.qty; // this will store the quantity of the product to be deleted
 
         //update the cart
-        updatedCart.products = updatedCart.products.filter(
-          (prod) => prod.id !== id
-        ); // this will filter out the product to be deleted
-        updatedCart.totalPrice =
-          updatedCart.totalPrice - productPrice * productQty; // this will update the total price of the cart
+        updatedCart.products = updatedCart.products.filter((prod) => prod.id !== id); // this will filter out the product to be deleted
+        updatedCart.totalPrice = updatedCart.totalPrice - (productPrice * productQty); // this will update the total price of the cart
         fs.writeFile(p, JSON.stringify(updatedCart), (err) => {
           console.log(err);
         });
@@ -69,7 +66,7 @@ module.exports = class Cart {
 
   static getCart(cb) {
     fs.readFile(p, (err, fileContent) => {
-        
+
         const cart  = JSON.parse(fileContent); // parse the file content into a javascript object
 
         if(err){

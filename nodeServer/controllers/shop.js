@@ -67,6 +67,22 @@ exports.getCart = (req, res, next) => {
   });
 };
 
+exports.postCart = (req, res, next) => {
+  const prodId = req.body.productId;
+  Product.findById(prodId, (product) => {
+    Cart.addProduct(prodId, product.price);
+  });
+  res.redirect("/cart");
+};
+
+exports.postCartDeleteProduct = (req, res, next) => {
+  const prodId = req.body.productId; // this will get the product id from the request body
+  Product.findById(prodId, (product) => {
+    Cart.deleteProduct(prodId, +product.price); // this will delete the product from the cart
+    res.redirect("/cart");
+  }); // this will get the product from the database
+};
+
 /**
  * Render the orders view.
  * @param {Object} req - The request object.
@@ -105,10 +121,4 @@ exports.getProduct = (req, res, next) => {
   });
 };
 
-exports.postCart = (req, res, next) => {
-  const prodId = req.body.productId;
-  Product.findById(prodId, (product) => {
-    Cart.addProduct(prodId, product.price);
-  });
-  res.redirect("/cart");
-};
+
