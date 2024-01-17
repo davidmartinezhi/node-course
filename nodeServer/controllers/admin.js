@@ -74,7 +74,7 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.postDeleteProduct = (req, res, next) => {
-  const prodId = req.params.productId; // this will extract the product id from the url
+  const prodId = req.body.productId; // this will extract the product id from the request body
   Product.deleteById(prodId); // this will delete the product from the database
   res.redirect("/admin/products");
 };
