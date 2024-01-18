@@ -8,16 +8,27 @@ const Cart = require("../models/cart");
  * @param {Function} next - The next middleware function.
  */
 exports.getProducts = (req, res, next) => {
-  // this will fetch all the products
-  Product.fetchAll()
-    .then(([rows, fieldData]) => {
+  // this will fetch all the products with sequelize
+  Product.findAll()
+    .then((products) => {
       res.render("shop/product-list", {
-        prods: rows,
+        prods: products,
         docTitle: "All Products",
         path: "/products",
       });
     })
     .catch((err) => console.log(err));
+
+  // this will fetch all the products with just sql
+  // Product.fetchAll()
+  //   .then(([rows, fieldData]) => {
+  //     res.render("shop/product-list", {
+  //       prods: rows,
+  //       docTitle: "All Products",
+  //       path: "/products",
+  //     });
+  //   })
+  //   .catch((err) => console.log(err));
 };
 
 /**
@@ -27,16 +38,27 @@ exports.getProducts = (req, res, next) => {
  * @param {Function} next - The next middleware function.
  */
 exports.getIndex = (req, res, next) => {
-  // this will fetch all the products
-  Product.fetchAll()
-    .then(([rows, fieldData]) => {
+  // this will fetch all the products with sequelize
+  Product.findAll()
+    .then((products) => {
       res.render("shop/index", {
-        prods: rows,
+        prods: products,
         docTitle: "Shop",
         path: "/",
       });
     })
     .catch((err) => console.log(err));
+
+  // this will fetch all the products with just sql
+  // Product.fetchAll()
+  //   .then(([rows, fieldData]) => {
+  //     res.render("shop/index", {
+  //       prods: rows,
+  //       docTitle: "Shop",
+  //       path: "/",
+  //     });
+  //   })
+  //   .catch((err) => console.log(err));
 };
 
 /**
