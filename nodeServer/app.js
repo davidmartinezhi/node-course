@@ -11,6 +11,10 @@ const errorController = require("./controllers/error");
 //Database
 const sequelize = require("./util/database");
 
+//Models
+const Product = require("./models/product");
+const User = require("./models/user");
+
 const app = express(); // this initializes a new express object where the framwework stores and manages things for us
 
 //pug template engine
@@ -32,22 +36,6 @@ app.set("views", "views"); // this allows us to set any value globally that expr
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 
-// // this will execute the query
-// db.execute("SELECT * FROM products")
-//     .then(result => {
-//         console.log(result[0], result[1]);
-//     })
-//     .catch(err => {
-//         console.log("here 2");
-//         console.log(err);
-//     });
-
-/*
- Express JS is all about middleware
- Incoming requests are funneled through a bunch of functions
- before we send a response
- In this way we pass thrpugh blocks of code before responding
-*/
 
 // this is a function that allows us to add a new middleware function
 //Allows us to use array of middleware functions
@@ -68,12 +56,17 @@ app.use(shopRoutes);
 
 app.use("/", errorController.get404);
 
+
+//Associations
+Product.belongsTo(User, {constraints: true, onDelete: 'CASCADE'}); // this will add a userId column to the products table and delete all products associated with the user when the user is deleted
+//User.hasMany(Product); // this will add a userId column to the products table, its the same as the line above but the other way around
+
 /*
 This looks at all the models you defined
 Its aware of your models and creates tables.
 It syncs your models and the db information
 */
-sequelize.sync().then( result => {
+sequelize.sync({force: true}).then( result => {
     //console.log(result);
     app.listen(3000);
 }).catch(err => {
