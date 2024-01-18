@@ -9,7 +9,7 @@ const bodyParser = require("body-parser"); // this is a package that allows us t
 const errorController = require("./controllers/error");
 
 //Database
-const db = require("./util/database");
+const sequelize = require("./util/database");
 
 const app = express(); // this initializes a new express object where the framwework stores and manages things for us
 
@@ -68,14 +68,14 @@ app.use(shopRoutes);
 
 app.use("/", errorController.get404);
 
-//const routes = require('./routes_vanilla-node'); // we can omit the .js extension
-
-// function rqListener(req, res){
-
-// }
-
-// http.createServer(rqListener); // rqListener is a function that will be executed for every incoming request
-
-// const server = http.createServer(app); // we can also use an anonymous function
-// server.listen(3000); // this will keep the server running and listening for incoming requests
-app.listen(3000); // this is a shortcut for the above code
+/*
+This looks at all the models you defined
+Its aware of your models and creates tables.
+It syncs your models and the db information
+*/
+sequelize.sync().then( result => {
+    //console.log(result);
+    app.listen(3000);
+}).catch(err => {
+    console.log(err);
+});

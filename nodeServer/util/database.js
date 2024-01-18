@@ -1,6 +1,7 @@
+const env = require("dotenv").config();
 const Sequelize = require("sequelize");
 
-const password = process.env.PASSWORD_MYSQL;
+const password = process.env.PASSWORD_MYSQL
 
 const sequelize = new Sequelize("node-complete", "root", password, {
   dialect: "mysql",
