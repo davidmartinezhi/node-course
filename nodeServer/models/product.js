@@ -41,5 +41,7 @@ module.exports = class Product {
     return db.execute("SELECT * FROM products"); // this will execute the query and we return the promise
   }
 
-  static findById(id) {}
+  static findById(id) {
+    return db.execute("SELECT * FROM products WHERE products.id = ?", [id]); // this will execute the query and we return the promise
+  }
 };

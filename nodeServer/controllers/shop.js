@@ -8,7 +8,6 @@ const Cart = require("../models/cart");
  * @param {Function} next - The next middleware function.
  */
 exports.getProducts = (req, res, next) => {
-
   // this will fetch all the products
   Product.fetchAll()
     .then(([rows, fieldData]) => {
@@ -18,9 +17,7 @@ exports.getProducts = (req, res, next) => {
         path: "/products",
       });
     })
-    .catch(err => console.log(err)); 
-
-
+    .catch((err) => console.log(err));
 };
 
 /**
@@ -39,8 +36,7 @@ exports.getIndex = (req, res, next) => {
         path: "/",
       });
     })
-    .catch(err => console.log(err)); 
-
+    .catch((err) => console.log(err));
 };
 
 /**
@@ -121,14 +117,14 @@ exports.getCheckout = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
-  Product.findById(prodId, (product) => {
-    // console.log(product);
-    res.render("shop/product-detail", {
-      product: product,
-      docTitle: product.title,
-      path: "/products",
-    });
-  });
+  Product.findById(prodId)
+    .then(([product]) => {
+      console.log(product);
+      res.render("shop/product-detail", {
+        product: product[0],
+        docTitle: product[0].title,
+        path: "/products",
+      });
+    })
+    .catch((err) => console.log(err));
 };
-
-
