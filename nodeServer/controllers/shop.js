@@ -139,13 +139,26 @@ exports.getCheckout = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
-  Product.findById(prodId)
-    .then(([product]) => {
+
+  //with sequelize
+  Product.findByPk(prodId)
+    .then((product) => {
       res.render("shop/product-detail", {
-        product: product[0],
-        docTitle: product[0].title,
+        product: product,
+        docTitle: product.title,
         path: "/products",
       });
     })
     .catch((err) => console.log(err));
+
+  //just sql
+  // Product.findById(prodId)
+  //   .then(([product]) => {
+  //     res.render("shop/product-detail", {
+  //       product: product[0],
+  //       docTitle: product[0].title,
+  //       path: "/products",
+  //     });
+  //   })
+  //   .catch((err) => console.log(err));
 };
