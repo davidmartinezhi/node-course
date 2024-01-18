@@ -19,7 +19,6 @@ const Cart = require("./cart");
 // };
 
 module.exports = class Product {
-
   constructor(id, title, imageUrl, description, price) {
     this.id = id;
     this.title = title;
@@ -29,19 +28,18 @@ module.exports = class Product {
   }
 
   save() {
-
+    // we can use the ? to avoid sql injection attacks
+    return db.execute(
+      "INSERT INTO products (title, price, description, imageUrl) VALUES (?, ?, ?, ?)",   // this is the query
+      [this.title, this.price, this.description, this.imageUrl] // this is an array of values that will be inserted into the query
+    ); // we return the promise
   }
 
-  static deleteById(id){
-
-  }
+  static deleteById(id) {}
 
   static fetchAll() {
-   return db.execute("SELECT * FROM products");
+    return db.execute("SELECT * FROM products"); // this will execute the query and we return the promise
   }
 
-  static findById(id) {
-
-  }
-
+  static findById(id) {}
 };

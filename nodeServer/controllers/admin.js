@@ -1,6 +1,5 @@
 const Product = require("../models/product");
 
-
 /**
  * Renders the add product page.
  * @param {Object} req - The request object.
@@ -11,7 +10,7 @@ exports.getAddProduct = (req, res, next) => {
   res.render("admin/edit-product", {
     docTitle: "Add Product",
     path: "/admin/add-product",
-    editing: false
+    editing: false,
   });
 };
 
@@ -27,15 +26,18 @@ exports.postAddProduct = (req, res, next) => {
   const price = req.body.price;
   const description = req.body.description;
   const product = new Product(null, title, imageUrl, description, price);
-  product.save();
-  res.redirect("/");
+  product
+    .save()
+    .then(() => {
+      res.redirect("/");
+    })
+    .catch((err) => console.log(err));
 };
-
 
 exports.getEditProduct = (req, res, next) => {
   const editMode = req.query.edit; // this will return true if the query string has edit=true
 
-  if(!editMode){
+  if (!editMode) {
     return res.redirect("/");
   }
 
@@ -43,15 +45,15 @@ exports.getEditProduct = (req, res, next) => {
   const prodId = req.params.productId;
 
   // Fetch the product from the database
-  Product.findById(prodId, product => {
-    if(!product){
+  Product.findById(prodId, (product) => {
+    if (!product) {
       return res.redirect("/");
     }
     res.render("admin/edit-product", {
       docTitle: "Edit Product",
       path: "/admin/edit-product",
       editing: editMode,
-      product: product
+      product: product,
     });
   });
 };
@@ -66,7 +68,13 @@ exports.postEditProduct = (req, res, next) => {
   const updatedPrice = req.body.price;
   const updatedDescription = req.body.description;
 
-  const updatedProduct = new Product(prodId, updatedTitle, updatedImageUrl, updatedDescription, updatedPrice);
+  const updatedProduct = new Product(
+    prodId,
+    updatedTitle,
+    updatedImageUrl,
+    updatedDescription,
+    updatedPrice
+  );
 
   updatedProduct.save(); // this will update the product in the database
 
@@ -88,5 +96,3 @@ exports.getProducts = (req, res, next) => {
     });
   }); // this will fetch all the products
 };
-
-
