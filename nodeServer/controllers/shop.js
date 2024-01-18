@@ -8,13 +8,19 @@ const Cart = require("../models/cart");
  * @param {Function} next - The next middleware function.
  */
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll((products) => {
-    res.render("shop/product-list", {
-      prods: products,
-      docTitle: "All Products",
-      path: "/products",
-    });
-  }); // this will fetch all the products
+
+  // this will fetch all the products
+  Product.fetchAll()
+    .then(([rows, fieldData]) => {
+      res.render("shop/product-list", {
+        prods: rows,
+        docTitle: "All Products",
+        path: "/products",
+      });
+    })
+    .catch(err => console.log(err)); 
+
+
 };
 
 /**
@@ -24,13 +30,17 @@ exports.getProducts = (req, res, next) => {
  * @param {Function} next - The next middleware function.
  */
 exports.getIndex = (req, res, next) => {
-  Product.fetchAll((products) => {
-    res.render("shop/index", {
-      prods: products,
-      docTitle: "Shop",
-      path: "/",
-    });
-  }); // this will fetch all the products
+  // this will fetch all the products
+  Product.fetchAll()
+    .then(([rows, fieldData]) => {
+      res.render("shop/index", {
+        prods: rows,
+        docTitle: "Shop",
+        path: "/",
+      });
+    })
+    .catch(err => console.log(err)); 
+
 };
 
 /**

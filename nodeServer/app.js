@@ -5,11 +5,11 @@ const express = require("express");
 const bodyParser = require("body-parser"); // this is a package that allows us to parse the body of the request
 //const expressHbs = require("express-handlebars");
 
-const adminRoutes = require("./routes/admin");
-const shopRoutes = require("./routes/shop");
-
-//controllers
+//Controllers
 const errorController = require("./controllers/error");
+
+//Database
+const db = require("./util/database");
 
 const app = express(); // this initializes a new express object where the framwework stores and manages things for us
 
@@ -26,8 +26,22 @@ const app = express(); // this initializes a new express object where the framwe
 //   })
 // );
 app.set("view engine", "ejs");
-
 app.set("views", "views"); // this allows us to set any value globally that express will manage for us
+
+//Routes
+const adminRoutes = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
+
+// // this will execute the query
+// db.execute("SELECT * FROM products")
+//     .then(result => {
+//         console.log(result[0], result[1]);
+//     })
+//     .catch(err => {
+//         console.log("here 2");
+//         console.log(err);
+//     });
+
 /*
  Express JS is all about middleware
  Incoming requests are funneled through a bunch of functions
