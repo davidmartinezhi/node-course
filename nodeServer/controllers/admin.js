@@ -50,18 +50,33 @@ exports.getEditProduct = (req, res, next) => {
   // Extract the product id from the url
   const prodId = req.params.productId;
 
-  // Fetch the product from the database
-  Product.findById(prodId, (product) => {
-    if (!product) {
-      return res.redirect("/");
-    }
-    res.render("admin/edit-product", {
-      docTitle: "Edit Product",
-      path: "/admin/edit-product",
-      editing: editMode,
-      product: product,
-    });
-  });
+  // Fetch the product from the database with sequelize
+  Product.findByPk(prodId)
+    .then((product) => {
+      if (!product) {
+        return res.redirect("/");
+      }
+      res.render("admin/edit-product", {
+        docTitle: "Edit Product",
+        path: "/admin/edit-product",
+        editing: editMode,
+        product: product,
+      });
+    })
+    .catch((err) => console.log(err));
+
+  // Fetch the product from the database with just sql
+  // Product.findById(prodId, (product) => {
+  //   if (!product) {
+  //     return res.redirect("/");
+  //   }
+  //   res.render("admin/edit-product", {
+  //     docTitle: "Edit Product",
+  //     path: "/admin/edit-product",
+  //     editing: editMode,
+  //     product: product,
+  //   });
+  // });
 };
 
 exports.postEditProduct = (req, res, next) => {
@@ -74,17 +89,33 @@ exports.postEditProduct = (req, res, next) => {
   const updatedPrice = req.body.price;
   const updatedDescription = req.body.description;
 
-  const updatedProduct = new Product(
-    prodId,
-    updatedTitle,
-    updatedImageUrl,
-    updatedDescription,
-    updatedPrice
-  );
+  // Update the product in the database with sequelize
+  Product.findByPk(prodId).then(product => {
+    product.title = updatedTitle;
+    product.imageUrl = updatedImageUrl;
+    product.price = updatedPrice;
+    product.description = updatedDescription;
 
-  updatedProduct.save(); // this will update the product in the database
+    //if product exists, it will update it, else it will create a new product
+    return product.save(); // this will save the updated product to the database
+  }).then( result => { //this block will handle the result of the save() method
+    console.log("Updated Product");
+    res.redirect("/admin/products");
+  }).catch( err => console.log(err)); // this will catch any errors on any of the promises
 
-  res.redirect("/admin/products");
+
+  // Update the product in the database with sql
+  // const updatedProduct = new Product(
+  //   prodId,
+  //   updatedTitle,
+  //   updatedImageUrl,
+  //   updatedDescription,
+  //   updatedPrice
+  // );
+
+  // updatedProduct.save(); // this will update the product in the database
+
+  //res.redirect("/admin/products");
 };
 
 exports.postDeleteProduct = (req, res, next) => {
