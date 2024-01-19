@@ -36,6 +36,9 @@ app.set("views", "views"); // this allows us to set any value globally that expr
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 
+// serving static files
+app.use(express.static(path.join(__dirname, "public"))); // this allows us to serve static files like css files
+
 // this is a function that allows us to add a new middleware function
 //Allows us to use array of middleware functions
 //Whatrever we add will be used for every incoming request
@@ -48,25 +51,27 @@ const shopRoutes = require("./routes/shop");
 
 //urlencoded is a function that returns a middleware function
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, "public"))); // this allows us to serve static files like css files
-app.use((req, res, next) => {
-    // this will find the user with the given id
-    User.findByPk(1)
-        .then((user) => {
-            req.user = user; // this will add a user property to the request object
-            next(); // this allows the request to continue to the next middleware in line
-        })
-        .catch((err) => console.log(err));
+
+
+app.use(async (req, res, next) => {
+  // this will find the user with the given id
+  await User.findByPk(1)
+    .then(user => {
+      req.user = user; // this will add a user property to the request object
+      next(); // this allows the request to continue to the next middleware in line
+    })
+    .catch((err) => console.log(err));
 });
 
+
+//routes
 app.use("/admin", adminRoutes); // this will register the adminRoutes middleware
 app.use(shopRoutes);
-
 app.use("/", errorController.get404);
 
 //Associations
 Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" }); // this will add a userId column to the products table and delete all products associated with the user when the user is deleted
-//User.hasMany(Product); // this will add a userId column to the products table, its the same as the line above but the other way around
+User.hasMany(Product); // this will add a userId column to the products table, its the same as the line above but the other way around
 
 /*
 This looks at all the models you defined
@@ -84,8 +89,9 @@ sequelize
     //console.log(result);
   })
   .then((user) => {
-    if(!user){ // if there is no user, then create one
-        return User.create({ name: "Max", email: "test@test.com"});
+    if (!user) {
+      // if there is no user, then create one
+      return User.create({ name: "Max", email: "test@test.com" });
     }
     return user; // if there is a user, then return it
   })

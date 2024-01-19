@@ -27,28 +27,28 @@ exports.postAddProduct = (req, res, next) => {
   const description = req.body.description;
 
   // sequelize will automatically add the userId to the product
-  // req.user.createProduct({
-  //   // this will create a new product in the database
-  //   title: title,
-  //   imageUrl: imageUrl,
-  //   description: description,
-  //   price: price,
-  // });
-
-  Product.create({
+  req.user.createProduct({
     // this will create a new product in the database
     title: title,
     imageUrl: imageUrl,
     description: description,
     price: price,
-    userId: req.user.id
   })
-    .then((result) => {
-      //console.log(result);
-      console.log("Created Product");
-      res.redirect("/admin/products");
-    })
-    .catch((err) => console.log(err));
+  .then((result) => {
+    //console.log(result);
+    console.log("Created Product");
+    res.redirect("/admin/products");
+  })
+  .catch((err) => console.log(err));
+  // Product.create({
+  //   // this will create a new product in the database
+  //   title: title,
+  //   imageUrl: imageUrl,
+  //   description: description,
+  //   price: price,
+  //   userId: req.user.id
+  // })
+
 };
 
 exports.getEditProduct = (req, res, next) => {
@@ -60,9 +60,10 @@ exports.getEditProduct = (req, res, next) => {
 
   // Extract the product id from the url
   const prodId = req.params.productId;
-
+  console.log("=====", req.user);
+  req.user.getProducts({ where: { id: prodId } }) // this will get the products associated with the user
   // Fetch the product from the database with sequelize
-  Product.findByPk(prodId)
+  //Product.findByPk(prodId)
     .then((product) => {
       if (!product) {
         return res.redirect("/");
@@ -145,7 +146,8 @@ exports.postDeleteProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.findAll()
+  // Product.findAll()
+  req.user.getProducts() // this will get the products associated with the user
     .then((products) => {
       res.render("admin/products", {
         prods: products,
