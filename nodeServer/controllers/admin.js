@@ -26,12 +26,22 @@ exports.postAddProduct = (req, res, next) => {
   const price = req.body.price;
   const description = req.body.description;
 
+  // sequelize will automatically add the userId to the product
+  // req.user.createProduct({
+  //   // this will create a new product in the database
+  //   title: title,
+  //   imageUrl: imageUrl,
+  //   description: description,
+  //   price: price,
+  // });
+
   Product.create({
     // this will create a new product in the database
     title: title,
     imageUrl: imageUrl,
     description: description,
     price: price,
+    userId: req.user.id
   })
     .then((result) => {
       //console.log(result);
