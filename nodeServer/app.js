@@ -14,6 +14,8 @@ const sequelize = require("./util/database");
 //Models
 const Product = require("./models/product");
 const User = require("./models/user");
+const Cart = require("./models/cart");
+const CartItem = require("./models/cart-item");
 
 const app = express(); // this initializes a new express object where the framwework stores and manages things for us
 
@@ -73,6 +75,12 @@ app.use("/", errorController.get404);
 Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" }); // this will add a userId column to the products table and delete all products associated with the user when the user is deleted
 User.hasMany(Product); // this will add a userId column to the products table, its the same as the line above but the other way around
 
+User.hasOne(Cart); // this will add a cartId column to the users table
+Cart.belongsTo(User); // this will add a userId column to the carts table
+
+Cart.belongsToMany(Product, { through: CartItem }); // this will add a cartId column and a productId column to the cartItems table
+Product.belongsToMany(Cart, { through: CartItem }); // this will add a cartId column and a productId column to the cartItems table
+
 /*
 This looks at all the models you defined
 Its aware of your models and creates tables.
@@ -82,8 +90,8 @@ npm start is what runs this, not incoming requests,
 so checking the user can be a middleware function
 */
 sequelize
-  //.sync({ force: true }) // this will drop all tables and recreate them
-  .sync()
+  .sync({ force: true }) // this will drop all tables and recreate them
+  //.sync()
   .then((result) => {
     return User.findByPk(1); // this will find the user with the given id
     //console.log(result);
