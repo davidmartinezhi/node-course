@@ -89,24 +89,26 @@ It syncs your models and the db information
 npm start is what runs this, not incoming requests,
 so checking the user can be a middleware function
 */
-sequelize
-  .sync({ force: true }) // this will drop all tables and recreate them
-  //.sync()
-  .then((result) => {
-    return User.findByPk(1); // this will find the user with the given id
-    //console.log(result);
-  })
-  .then((user) => {
-    if (!user) {
-      // if there is no user, then create one
-      return User.create({ name: "Max", email: "test@test.com" });
+
+
+const startServer = async () => {
+    try {
+      await sequelize.sync();
+      let user = await User.findByPk(1);
+  
+      if (!user) {
+        user = await User.create({ name: 'Max', email: 'test@test.com' });
+      }
+  
+      let cart = await user.getCart();
+      if (!cart) {
+        cart = await user.createCart();
+      }
+  
+      app.listen(3000, () => console.log('Server is running on port 3000'));
+    } catch (err) {
+      console.log(err);
     }
-    return user; // if there is a user, then return it
-  })
-  .then((user) => {
-    console.log(user);
-    app.listen(3000);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+  };
+  
+  startServer();
