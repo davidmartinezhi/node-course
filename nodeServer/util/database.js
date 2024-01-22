@@ -1,14 +1,25 @@
-const env = require("dotenv").config();
-const Sequelize = require("sequelize");
+const mongodb = require("mongodb");
+const MongoClient = mongodb.MongoClient;
+const uri =
+  "mongodb+srv://david:dZiATPxy4lpvAc0e@cluster0.7pba9hx.mongodb.net/?retryWrites=true&w=majority";
 
-const password = process.env.PASSWORD_MYSQL
 
-const sequelize = new Sequelize("node-complete", "root", password, {
-  dialect: "mysql",
-  host: "localhost",
-});
+const client = new MongoClient(uri);
 
-module.exports = sequelize;
+module.exports = client;
+
+//SEQUELIZE CODE
+// const env = require("dotenv").config();
+// const Sequelize = require("sequelize");
+
+// const password = process.env.PASSWORD_MYSQL
+
+// const sequelize = new Sequelize("node-complete", "root", password, {
+//   dialect: "mysql",
+//   host: "localhost",
+// });
+
+// module.exports = sequelize;
 
 //Sequelize does this behind the scenes
 // const mysql = require('mysql2');
