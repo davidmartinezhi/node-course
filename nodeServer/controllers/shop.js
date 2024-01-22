@@ -1,5 +1,4 @@
 const Product = require("../models/product");
-const Cart = require("../models/cart");
 
 /**
  * Get all products and render the product list view.
@@ -109,48 +108,70 @@ exports.getCart = (req, res, next) => {
 };
 
 exports.postCart = async (req, res, next) => {
-  
-  try{
+  try {
     const prodId = req.body.productId; // this will get the product id from the request body
     const cart = await req.user.getCart(); // this will store the cart
-    const cartProduct = await cart.getProducts({ where: { id: prodId}}); // this will store the product in the cart
+    const cartProduct = await cart.getProducts({ where: { id: prodId } }); // this will store the product in the cart
     const fetchedProduct = await Product.findByPk(prodId); // this will store the fetched product
-    
-    const product = cartProduct.length > 0 && cartProduct[0]; 
+
+    const product = cartProduct.length > 0 && cartProduct[0];
     let newQuantity = 1; // this will store the new quantity of the product
 
-    if(product){
+    if (product) {
       const oldQuantity = product.cartItem.quantity; // this will store the old quantity of the product
       newQuantity = oldQuantity + 1; // this will set the new quantity of the product
     }
 
     cart.addProduct(fetchedProduct, { through: { quantity: newQuantity } }); // this will add the product to the cart
     res.redirect("/cart");
-
-  }catch(err){
-    console.log(err)
+  } catch (err) {
+    console.log(err);
   }
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId; // this will get the product id from the request body
 
-  req.user.getCart()
-    .then(cart => {
+  req.user
+    .getCart()
+    .then((cart) => {
       return cart.getProducts({ where: { id: prodId } });
     })
-    .then(products => {
+    .then((products) => {
       const product = products.length > 0 && products[0];
       return product.cartItem.destroy();
     })
-    .then(result => {
+    .then((result) => {
       res.redirect("/cart");
     })
-    .catch(err => console.log(err));
+    .catch((err) => console.log(err));
   // Product.findById(prodId, (product) => {
   //   Cart.deleteProduct(prodId, +product.price); // this will delete the product from the cart
   //   res.redirect("/cart");
   // }); // this will get the product from the database
+};
+
+exports.postOrder = (req, res, next) => {
+  req.user
+    .getCart()
+    .then((cart) => {
+      return cart.getProducts();
+    })
+    .then((products) => {
+      return req.user
+        .createOrder()
+        .then( order => {
+          return order.addProducts(products.map(product => {
+            product.orderItem = { quantity: product.cartItem.quantity };
+            return product;
+          }));
+        })
+        .catch((err) => console.log(err));
+    })
+    .then(result => {
+      res.redirect("/orders");
+    })
+    .catch((err) => console.log(err));
 };
 
 /**
