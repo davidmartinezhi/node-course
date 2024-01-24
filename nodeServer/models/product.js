@@ -2,21 +2,36 @@ const mongodb = require("mongodb");
 const getDb = require("../util/database").getDb;
 
 class Product {
-  constructor(title, imageUrl, description, price) {
+  constructor(title, imageUrl, description, price, id) {
     this.title = title;
     this.imageUrl = imageUrl;
     this.description = description;
     this.price = price;
+    this._id = id ? new mongodb.ObjectId(id) : null; // this will create a new object id if the id is not null
   }
 
   async save() {
     const db = getDb(); // this will return the database object
+    let dbOp;
 
     try {
-      return await db.collection("products").insertOne(this); // this will insert the product into the products collection
+      if (this._id) {
+        // update the product
+        dbOp = await db
+          .collection("products")
+          .updateOne({ _id: this._id }, { $set: this });
+      } else {
+        // insert the product
+        dbOp = await db.collection("products").insertOne(this);
+      }
     } catch (err) {
       console.log(err);
+      // Handle the error according to your application's needs
+      // Could rethrow, return null, or handle it in some other way
+      throw err; // or return null;
     }
+
+    return dbOp;
   }
 
   static async fetchAll() {
@@ -37,8 +52,8 @@ class Product {
     try {
       const product = await db
         .collection("products")
-        .find({ _id: new  mongodb.ObjectId(prodId) }) // this will return the product with the matching id
-        .next(); // this will return the product with the matching id
+        .find({ _id: new mongodb.ObjectId(prodId) })
+        .next();
       console.log(product);
       return product;
     } catch (err) {
