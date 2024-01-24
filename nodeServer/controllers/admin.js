@@ -87,7 +87,7 @@ exports.postAddProduct = async (req, res, next) => {
 //   const updatedDescription = req.body.description;
 
 //   // Update the product in the database with sequelize
-//   Product.findByPk(prodId).then(product => {
+//   Product.updateById(prodId).then(product => {
 //     product.title = updatedTitle;
 //     product.imageUrl = updatedImageUrl;
 //     product.price = updatedPrice;
@@ -130,24 +130,15 @@ exports.postAddProduct = async (req, res, next) => {
 //     .catch(err => console.log(err));
 // };
 
-// exports.getProducts = (req, res, next) => {
-//   // Product.findAll()
-//   req.user.getProducts() // this will get the products associated with the user
-//     .then((products) => {
-//       res.render("admin/products", {
-//         prods: products,
-//         docTitle: "Admin Products",
-//         path: "/admin/products",
-//       });
-//     })
-//     .catch((err) => console.log(err));
-
-//   //just sql
-//   // Product.fetchAll((products) => {
-//   //   res.render("admin/products", {
-//   //     prods: products,
-//   //     docTitle: "Admin Products",
-//   //     path: "/admin/products",
-//   //   });
-//   // }); // this will fetch all the products
-// };
+exports.getProducts = (req, res, next) => {
+  // Product.findAll()
+  Product.fetchAll() // this will get the products associated with the user
+    .then((products) => {
+      res.render("admin/products", {
+        prods: products,
+        docTitle: "Admin Products",
+        path: "/admin/products",
+      });
+    })
+    .catch((err) => console.log(err));
+};

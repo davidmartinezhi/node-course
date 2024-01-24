@@ -44,7 +44,6 @@ class Product {
     } catch (err) {
       console.log(err);
     }
-
   }
 }
 
