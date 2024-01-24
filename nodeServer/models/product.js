@@ -1,5 +1,5 @@
+const mongodb = require("mongodb");
 const getDb = require("../util/database").getDb;
-
 
 class Product {
   constructor(title, imageUrl, description, price) {
@@ -14,9 +14,8 @@ class Product {
 
     try {
       return await db.collection("products").insertOne(this); // this will insert the product into the products collection
-    }
-    catch (err) {
-     console.log(err);
+    } catch (err) {
+      console.log(err);
     }
   }
 
@@ -27,15 +26,29 @@ class Product {
       const products = await db.collection("products").find().toArray(); // this will return all the products
       console.log(products);
       return products;
-    }
-    catch (err) {
+    } catch (err) {
       console.log(err);
     }
+  }
+
+  static async findById(prodId) {
+    const db = getDb(); // this will return the database object
+
+    try {
+      const product = await db
+        .collection("products")
+        .find({ _id: new  mongodb.ObjectId(prodId) }) // this will return the product with the matching id
+        .next(); // this will return the product with the matching id
+      console.log(product);
+      return product;
+    } catch (err) {
+      console.log(err);
+    }
+
   }
 }
 
 module.exports = Product;
-
 
 // ** SEQUELIZE **
 
@@ -58,7 +71,7 @@ module.exports = Product;
 //   description: {
 //     type: Sequelize.STRING,
 //     allowNull: false,
-//   },  
+//   },
 //   price: {
 //     type: Sequelize.DOUBLE,
 //     allowNull: false,
@@ -66,7 +79,6 @@ module.exports = Product;
 // });
 
 // module.exports = Product;
-
 
 // ** USING JUST SQL **
 // // const fs = require("fs");

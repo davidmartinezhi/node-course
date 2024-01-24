@@ -205,10 +205,9 @@ exports.getCheckout = (req, res, next) => {
 };
 
 exports.getProduct = (req, res, next) => {
-  const prodId = req.params.productId;
+  const prodId = req.params.productId; // this will get the product id from the request parameters
 
-  //with sequelize
-  Product.findByPk(prodId)
+  Product.findById(prodId)
     .then((product) => {
       res.render("shop/product-detail", {
         product: product,
@@ -218,14 +217,4 @@ exports.getProduct = (req, res, next) => {
     })
     .catch((err) => console.log(err));
 
-  //just sql
-  // Product.findById(prodId)
-  //   .then(([product]) => {
-  //     res.render("shop/product-detail", {
-  //       product: product[0],
-  //       docTitle: product[0].title,
-  //       path: "/products",
-  //     });
-  //   })
-  //   .catch((err) => console.log(err));
 };
