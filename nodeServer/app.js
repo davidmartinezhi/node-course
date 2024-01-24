@@ -9,7 +9,7 @@ const bodyParser = require("body-parser"); // this is a package that allows us t
 const errorController = require("./controllers/error");
 
 //Database
-const mongoClient = require("./util/database");
+const mongoConnect = require("./util/database").mongoConnect;
 
 /* SEQUELIZE CODE */
 // //Models
@@ -38,8 +38,8 @@ app.set("view engine", "ejs");
 app.set("views", "views"); // this allows us to set any value globally that express will manage for us
 
 //Routes
-// const adminRoutes = require("./routes/admin");
-// const shopRoutes = require("./routes/shop");
+const adminRoutes = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
 
 // serving static files
 app.use(express.static(path.join(__dirname, "public"))); // this allows us to serve static files like css files
@@ -57,36 +57,14 @@ app.use(express.static(path.join(__dirname, "public"))); // this allows us to se
 //urlencoded is a function that returns a middleware function
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use(async (req, res, next) => {
-  //   // this will find the user with the given id
-  //   await User.findByPk(1)
-  //     .then(user => {
-  //       req.user = user; // this will add a user property to the request object
-  //       next(); // this allows the request to continue to the next middleware in line
-  //     })
-  //     .catch((err) => console.log(err));
-});
-
 //routes
-// app.use("/admin", adminRoutes); // this will register the adminRoutes middleware
-// app.use(shopRoutes);
+app.use("/admin", adminRoutes); // this will register the adminRoutes middleware
+app.use(shopRoutes);
 app.use("/", errorController.get404);
 
-async function start() {
-  // this is an async function that will start the server
-  try {
-    // this is a try catch block that will catch any errors
-    await mongoClient.connect(); // this will connect to the database
-    app.listen(3000); // this will start the server
-    console.log("Connected!"); // this will log a message to the console
-  } catch (err) {
-    console.log(err);
-    await mongoClient.close(); // Close the connection if an error occurs during the connection or server startup
-    process.exit(1); // Optionally exit the process with an error code
-  }
-}
-
-start().catch(console.dir); // this will start the server
+mongoConnect(() => {
+    app.listen(3000, () => console.log("Server is running on port 3000"));
+});
 
 /* SEQUELIZE CODE */
 // //Associations

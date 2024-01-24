@@ -1,12 +1,38 @@
+//util/database.js
+const env = require("dotenv").config();
 const mongodb = require("mongodb");
 const MongoClient = mongodb.MongoClient;
-const uri =
-  "mongodb+srv://david:dZiATPxy4lpvAc0e@cluster0.7pba9hx.mongodb.net/?retryWrites=true&w=majority";
+const uri = process.env.MONGODB;
 
+let _db; // declaration to store and reuse your database connection.
 
-const client = new MongoClient(uri);
+const mongoClient = new MongoClient(uri); //  declaration to manage your MongoDB connection.
 
-module.exports = client;
+async function mongoConnect(callback) {
+  // this is an async function that will start the server
+  try {
+    // this is a try catch block that will catch any errors
+    await mongoClient.connect(); // this will connect to the database
+    console.log("Connected!"); // this will log a message to the console
+    _db = mongoClient.db(); // this will store the database connection
+    callback(); // this will execute the callback function
+  } catch (err) {
+    console.log(err);
+    await mongoClient.close(); // Close the connection if an error occurs during the connection or server startup
+  }
+}
+
+function getDb() { // to access your database connection throughout your application.
+  if (_db) {
+    return _db;
+  }
+  throw "No database found!";
+}
+
+module.exports = { mongoConnect, getDb };
+
+// module.mongoConnect = mongoConnect; // method to connect and storing variable to database
+// module.getDb = getDb; //return access to that database
 
 //SEQUELIZE CODE
 // const env = require("dotenv").config();

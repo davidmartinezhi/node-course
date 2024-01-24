@@ -8,7 +8,7 @@ const Product = require("../models/product");
  */
 exports.getProducts = (req, res, next) => {
   // this will fetch all the products with sequelize
-  Product.fetchAll()
+  Product.findAll()
     .then((products) => {
       res.render("shop/product-list", {
         prods: products,
@@ -18,7 +18,16 @@ exports.getProducts = (req, res, next) => {
     })
     .catch((err) => console.log(err));
 
-
+  // this will fetch all the products with just sql
+  // Product.fetchAll()
+  //   .then(([rows, fieldData]) => {
+  //     res.render("shop/product-list", {
+  //       prods: rows,
+  //       docTitle: "All Products",
+  //       path: "/products",
+  //     });
+  //   })
+  //   .catch((err) => console.log(err));
 };
 
 /**
@@ -29,7 +38,7 @@ exports.getProducts = (req, res, next) => {
  */
 exports.getIndex = (req, res, next) => {
   // this will fetch all the products with sequelize
-  Product.fetchAll()
+  Product.findAll()
     .then((products) => {
       res.render("shop/index", {
         prods: products,

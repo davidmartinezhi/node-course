@@ -1,71 +1,35 @@
-const getDb = require("../util/database").getDb;
+// ** USING SQL ORM: SEQUELIZE **
+const Sequelize = require("sequelize"); // this will import the sequelize package
 
+const sequelize = require("../util/database"); // this will import the sequelize instance
 
-class Product {
-  constructor(title, imageUrl, description, price) {
-    this.title = title;
-    this.imageUrl = imageUrl;
-    this.description = description;
-    this.price = price;
-  }
-
-  async save() {
-    const db = getDb(); // this will return the database object
-
-    try {
-      return await db.collection("products").insertOne(this); // this will insert the product into the products collection
-    }
-    catch (err) {
-     console.log(err);
-    }
-  }
-
-  static async fetchAll() {
-    const db = getDb(); // this will return the database object
-
-    try {
-      const products = await db.collection("products").find().toArray(); // this will return all the products
-      console.log(products);
-      return products;
-    }
-    catch (err) {
-      console.log(err);
-    }
-  }
-}
+// this will create a new model
+const Product = sequelize.define("product", {
+  id: {
+    type: Sequelize.INTEGER, // this will create an integer column
+    autoIncrement: true, // this will auto increment the id
+    allowNull: false, // this will not allow null values
+    primaryKey: true, // this will set the id as the primary key
+  },
+  title: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  imageUrl: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  description: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },  
+  price: {
+    type: Sequelize.DOUBLE,
+    allowNull: false,
+  },
+});
 
 module.exports = Product;
-
-
-// ** SEQUELIZE **
-
-// // this will create a new model
-// const Product = sequelize.define("product", {
-//   id: {
-//     type: Sequelize.INTEGER, // this will create an integer column
-//     autoIncrement: true, // this will auto increment the id
-//     allowNull: false, // this will not allow null values
-//     primaryKey: true, // this will set the id as the primary key
-//   },
-//   title: {
-//     type: Sequelize.STRING,
-//     allowNull: false,
-//   },
-//   imageUrl: {
-//     type: Sequelize.STRING,
-//     allowNull: false,
-//   },
-//   description: {
-//     type: Sequelize.STRING,
-//     allowNull: false,
-//   },  
-//   price: {
-//     type: Sequelize.DOUBLE,
-//     allowNull: false,
-//   },
-// });
-
-// module.exports = Product;
 
 
 // ** USING JUST SQL **
