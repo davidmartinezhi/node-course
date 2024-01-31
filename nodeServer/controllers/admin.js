@@ -67,7 +67,7 @@ exports.postEditProduct = (req, res, next) => {
   const prodId = req.body.productId;
 
   //Extract the updated info from the product
-  const updatedTitle = req.body.title;
+  const updatedTitle = req.body.title.trim();
   const updatedImageUrl = req.body.imageUrl;
   const updatedPrice = req.body.price;
   const updatedDescription = req.body.description;
