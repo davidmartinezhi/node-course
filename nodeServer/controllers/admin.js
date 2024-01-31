@@ -21,7 +21,7 @@ exports.getAddProduct = (req, res, next) => {
  * @param {Function} next - The next middleware function.
  */
 exports.postAddProduct = async (req, res, next) => {
-  const title = req.body.title;
+  const title = req.body.title.trim();
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
@@ -78,32 +78,28 @@ exports.postEditProduct = (req, res, next) => {
     updatedDescription,
     updatedPrice,
     prodId
-  ); 
+  );
 
   try {
     product.save(prodId); // this will save the updated product to the database
     console.log("Updated Product");
     res.redirect("/admin/products");
-  }
-  catch (err) {
+  } catch (err) {
     console.log(err);
   }
 };
 
-// exports.postDeleteProduct = (req, res, next) => {
-//   const prodId = req.body.productId; // this will extract the product id from the request body
-//   // Product.deleteById(prodId); // this will delete the product from the database, using file saving
+exports.postDeleteProduct = async (req, res, next) => {
+  const prodId = req.body.productId; // this will extract the product id from the request body
 
-//   Product.findByPk(prodId) // this will delete the product from the database with sequelize
-//     .then(product => {
-//       return product.destroy();
-//     })
-//     .then(result => {
-//       console.log("Destroyed Product");
-//       res.redirect("/admin/products");
-//     })
-//     .catch(err => console.log(err));
-// };
+  try {
+    await Product.deleteById(prodId); // this will delete the product from the database
+    console.log("Destroyed Product"); // this will log a message to the console
+    res.redirect("/admin/products"); // this will redirect to the products page
+  } catch (err) {
+    console.log(err); // this will log an error to the console
+  }
+};
 
 exports.getProducts = (req, res, next) => {
   // Product.findAll()

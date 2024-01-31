@@ -34,6 +34,18 @@ class Product {
     return dbOp;
   }
 
+  static async deleteById(prodId){
+    const db = getDb(); // this will return the database object
+
+    try {
+      const dbOp = await db.collection("products").deleteOne({_id: new mongodb.ObjectId(prodId)}); // this will delete the product
+      console.log("Deleted");
+      return dbOp;
+    } catch (err){
+      console.log(err);
+    }
+  }
+
   static async fetchAll() {
     const db = getDb(); // this will return the database object
 
