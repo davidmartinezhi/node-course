@@ -1,6 +1,6 @@
 //const http = require('http'); //without express
 const path = require("path"); // this is a core module
-
+const mongodb = require("mongodb");
 const express = require("express");
 const bodyParser = require("body-parser"); // this is a package that allows us to parse the body of the request
 //const expressHbs = require("express-handlebars");
@@ -10,6 +10,8 @@ const errorController = require("./controllers/error");
 
 //Database
 const mongoConnect = require("./util/database").mongoConnect;
+
+const User = require("./models/user");
 
 /* SEQUELIZE CODE */
 // //Models
@@ -44,23 +46,22 @@ const shopRoutes = require("./routes/shop");
 // serving static files
 app.use(express.static(path.join(__dirname, "public"))); // this allows us to serve static files like css files
 
-// this is a function that allows us to add a new middleware function
-//Allows us to use array of middleware functions
-//Whatrever we add will be used for every incoming request
-// app.use((req, res, next) => {
-//     console.log('In the middleware!');
-//     next(); // this allows the request to continue to the next middleware in line
-// }); // next is a function that will be passed to the middleware function by express));
-
-// Middleware functions are executed in the order they are defined
-
 //urlencoded is a function that returns a middleware function
 app.use(bodyParser.urlencoded({ extended: false }));
 
+app.use(async (req, res, next) => {
+    try{
+        req.user = await User.findById(new mongodb.ObjectId("65d552247450362b7187da81"));
+    }catch(err){
+        console.log(err);
+    }
+    next();
+});
+
 //routes
 app.use("/admin", adminRoutes); // this will register the adminRoutes middleware
-app.use(shopRoutes);
-app.use("/", errorController.get404);
+app.use(shopRoutes); // this will register the shopRoutes middleware
+app.use("/", errorController.get404); // this will register the errorController middleware
 
 mongoConnect(() => {
     app.listen(3000, () => console.log("Server is running on port 3000"));

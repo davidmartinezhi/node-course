@@ -1,50 +1,58 @@
 const mongodb = require("mongodb");
 const getDb = require("../util/database").getDb;
 
+const ObjectId = mongodb.ObjectId;
+
 class User {
   constructor(username, email, id) {
     this.username = username;
     this.email = email;
-    this._id = id ? new mongodb.ObjectId(id) : null;
+    //this._id = id ? new mongodb.ObjectId(id) : null;
   }
 
   async save() {
     const db = getDb();
-    let dbOp;
+    return db.collection("users").insertOne(this);
 
-    try {
+    // const db = getDb();
+    // let dbOp;
 
-      //check if we are editing an existing user
-      if(this._id){
-        dbOp = await db.collection("users").updateOne({ _id: this._id }, { $set: this }); // this will update the user
-        console.log("Updated User");
-        return dbOp;
-      }
+    // try {
 
-      //check if we are adding a new user
-      else{
-        dbOp = await db.collection("users").insertOne(this); // this will insert the user
-        console.log("Inserted User");
-        return dbOp;
-      }
+    //   //check if we are editing an existing user
+    //   if(this._id){
+    //     dbOp = await db.collection("users").updateOne({ _id: this._id }, { $set: this }); // this will update the user
+    //     console.log("Updated User");
+    //     return dbOp;
+    //   }
 
-    } catch (err) {
-      console.log(err);
-    }
+    //   //check if we are adding a new user
+    //   else{
+    //     dbOp = await db.collection("users").insertOne(this); // this will insert the user
+    //     console.log("Inserted User");
+    //     return dbOp;
+    //   }
+
+    // } catch (err) {
+    //   console.log(err);
+    // }
   }
 
   static async findById(userId) {
     const db = getDb();
 
-    try {
-      const user = await db
-        .collection("users")
-        .findOne({ _id: new mongodb.ObjectId(userId) });
-      console.log("Found User: " + user);
-      return user;
-    } catch (err) {
-      console.log(err);
-    }
+    return db.collection("users").findOne({ _id: new ObjectId(userId) });
+
+    // const db = getDb();
+
+    // try {
+    //   const user = await db
+    //   collection("users").findOne({_id : new mongodb.ObjectId(userId)});
+    //   console.log("Found User: " + user);
+    //   return user;
+    // } catch (err) {
+    //   console.log(err);
+    // }
   }
 }
 
