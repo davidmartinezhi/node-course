@@ -27,7 +27,15 @@ exports.postAddProduct = async (req, res, next) => {
   const description = req.body.description;
 
   try {
-    const product = new Product(title, imageUrl, description, price); // this will create a new product with just sql
+    const product = new Product(
+      title,
+      imageUrl,
+      description,
+      price,
+      null,
+      req.user._id
+    ); // this will create a new product
+    
     await product.save(); // this will save the product to the database
     console.log("Created Product");
     res.redirect("/admin/products");
