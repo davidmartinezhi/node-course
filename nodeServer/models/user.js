@@ -100,6 +100,25 @@ class User {
     }
   }
 
+  async deleteItemFromCart(productId) {
+    try {
+      const updatedCartItems = this.cart.items.filter((item) => {
+        return item.productId.toString() !== productId.toString(); // this will return true if the is not the one we are deleting
+      });
+
+      const db = getDb(); // this will return the database object
+
+      return await db
+        .collection("users")
+        .updateOne(
+          { _id: new ObjectId(this._id) },
+          { $set: { cart: {items: updatedCartItems} } }
+        ); // this will update the user's cart to have all cart items except the one deleted
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   static async findById(userId) {
     const db = getDb();
 

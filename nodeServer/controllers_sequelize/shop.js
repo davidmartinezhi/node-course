@@ -128,7 +128,7 @@ exports.postCart = async (req, res, next) => {
     console.log(err);
   }
 };
-
+/*
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId; // this will get the product id from the request body
 
@@ -150,7 +150,7 @@ exports.postCartDeleteProduct = (req, res, next) => {
   //   res.redirect("/cart");
   // }); // this will get the product from the database
 };
-
+*/
 exports.postOrder = (req, res, next) => {
 
   let fetchedCart; // this will store the cart
