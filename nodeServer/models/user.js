@@ -40,17 +40,43 @@ class User {
   }
 
   async addToCart(product) {
-    // const cartProduct = this.cart.items.findIndex(cp => {
-    //   return cp.productId.toString() === product._id.toString();
-    // });
+    try {
+      // this will get us the index of the product in the cart
+      const cartProductIndex = this.cart.items.findIndex((cp) => {
+        // this will find the product in the cart
+        return cp.productId.toString() === product._id.toString(); // this will return true if the product exists in the cart
+      });
 
-    const updatedCart = { items: [{ productId: new ObjectId(product._id), quantity: 1 }] }; // this will store the updated cart
+      let newQuantity = 1; // this will store the new quantity of the product
+      const updatedCartItems = [...this.cart.items]; // this will store the updated cart items
 
-    const db = getDb(); // this will return the database object
-    return await db.collection("users").updateOne(
-      { _id: new ObjectId(this._id) },
-      { $set: { cart: updatedCart } }
-    ); // this will update the user's cart
+      //product already exists and we are going to update
+      if (cartProductIndex >= 0) {
+        newQuantity = this.cart.items[cartProductIndex].quantity + 1; // this will set the new quantity of the product
+        updatedCartItems[cartProductIndex].quantity = newQuantity; // this will update the quantity of the product
+      }
+
+      //creating a new product
+      else {
+        updatedCartItems.push({
+          productId: new ObjectId(product._id),
+          quantity: newQuantity,
+        }); // this will add the product to the cart
+      }
+
+      const updatedCart = { items: updatedCartItems }; // this will store the updated cart
+
+      const db = getDb(); // this will return the database object
+
+      return await db
+        .collection("users")
+        .updateOne(
+          { _id: new ObjectId(this._id) },
+          { $set: { cart: updatedCart } }
+        ); // this will update the user's cart
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   static async findById(userId) {
