@@ -112,8 +112,26 @@ class User {
         .collection("users")
         .updateOne(
           { _id: new ObjectId(this._id) },
-          { $set: { cart: {items: updatedCartItems} } }
+          { $set: { cart: { items: updatedCartItems } } }
         ); // this will update the user's cart to have all cart items except the one deleted
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async addOrder() {
+    //luego añadirle que se guarde el id del usuario también
+    try {
+      const db = getDb(); // this will return the database object
+      const order = await db.collection("orders").insertOne(this.cart); // this will insert the order
+      this.cart = { items: [] }; // this will reset the cart. we clear cart on user object
+
+      return await db
+        .collection("users")
+        .updateOne(
+          { _id: new ObjectId(this._id) },
+          { $set: { cart: { items: [] } } }
+        ); // this will reset the user's cart. we clear cart in database
     } catch (error) {
       console.log(error);
     }

@@ -151,27 +151,8 @@ exports.postOrder = (req, res, next) => {
   let fetchedCart; // this will store the cart
 
   req.user
-    .getCart()
-    .then((cart) => {
-      fetchedCart = cart;
-      return cart.getProducts();
-    })
-    .then((products) => {
-      return req.user
-        .createOrder()
-        .then( order => {
-          return order.addProducts(products.map(product => {
-            product.orderItem = { quantity: product.cartItem.quantity };
-            return product;
-          }));
-        })
-        .catch((err) => console.log(err));
-    })
+    .addOrder()
     .then(result => {
-      return fetchedCart.setProducts(null); // this will delete all the products from the cart
-    })
-    .then(result => {
-
       res.redirect("/orders");
     })
     .catch((err) => console.log(err));
