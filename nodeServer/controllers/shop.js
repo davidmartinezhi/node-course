@@ -60,10 +60,8 @@ exports.getIndex = (req, res, next) => {
 exports.getCart = (req, res, next) => {
   req.user
     .getCart()
-    .then((cart) => {
-      return cart.getProducts();
-    })
     .then((products) => {
+      console.log(products);
       res.render("shop/cart", {
         docTitle: "Your Cart",
         path: "/cart",
@@ -105,8 +103,8 @@ exports.postCart = async (req, res, next) => {
   try{
     const product = await Product.findById(prodId); // this will store the product
     const result = await req.user.addToCart(product); // this will add the product to the cart
-
     console.log(result);
+    res.redirect("/cart");
 
   }catch(error){
     console.log(error);

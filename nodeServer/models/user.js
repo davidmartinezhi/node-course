@@ -79,6 +79,27 @@ class User {
     }
   }
 
+  async getCart() {
+    try {
+      const db = getDb(); // this will return the database object
+      const productIds = this.cart.items.map((i) => i.productId); // this will store the product ids
+      const products = await db
+        .collection("products")
+        .find({ _id: { $in: productIds } })
+        .toArray(); // this will return the products in the cart
+      return products.map((p) => {
+        return {
+          ...p,
+          quantity: this.cart.items.find((i) => {
+            return i.productId.toString() === p._id.toString(); // this will return true if the product exists in the cart
+          }).quantity,
+        };
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   static async findById(userId) {
     const db = getDb();
 
