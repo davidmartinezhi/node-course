@@ -120,10 +120,23 @@ class User {
   }
 
   async addOrder() {
-    //luego añadirle que se guarde el id del usuario también
     try {
       const db = getDb(); // this will return the database object
-      const order = await db.collection("orders").insertOne(this.cart); // this will insert the order
+
+      //get current cart detailed info
+      const products = await this.getCart(); // this will get the products in the cart
+
+      const order = { // this will store the order
+        items: products,
+        user: {
+          _id: new ObjectId(this._id),
+          name: this.username,
+        }
+      };
+
+      await db.collection("orders").insertOne(order); // this will insert the order
+
+
       this.cart = { items: [] }; // this will reset the cart. we clear cart on user object
 
       return await db
@@ -136,6 +149,11 @@ class User {
       console.log(error);
     }
   }
+
+async getOrders(){
+  const db = getDb();
+  return db.collection("orders").find({"user._id": new ObjectId(this._id)}).toArray();
+}
 
   static async findById(userId) {
     const db = getDb();
