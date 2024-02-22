@@ -4,10 +4,11 @@ const getDb = require("../util/database").getDb;
 const ObjectId = mongodb.ObjectId;
 
 class User {
-  constructor(username, email, id) {
+  constructor(username, email, cart, id) {
     this.username = username;
     this.email = email;
-    //this._id = id ? new mongodb.ObjectId(id) : null;
+    this.cart = cart; // this will store the user's cart
+    this._id = id; //  ? new mongodb.ObjectId(id) : null;
   }
 
   async save() {
@@ -36,6 +37,20 @@ class User {
     // } catch (err) {
     //   console.log(err);
     // }
+  }
+
+  async addToCart(product) {
+    // const cartProduct = this.cart.items.findIndex(cp => {
+    //   return cp.productId.toString() === product._id.toString();
+    // });
+
+    const updatedCart = { items: [{ productId: new ObjectId(product._id), quantity: 1 }] }; // this will store the updated cart
+
+    const db = getDb(); // this will return the database object
+    return await db.collection("users").updateOne(
+      { _id: new ObjectId(this._id) },
+      { $set: { cart: updatedCart } }
+    ); // this will update the user's cart
   }
 
   static async findById(userId) {

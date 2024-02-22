@@ -51,7 +51,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(async (req, res, next) => {
     try{
-        req.user = await User.findById(new mongodb.ObjectId("65d552247450362b7187da81"));
+        const dbUser = await User.findById(new mongodb.ObjectId("65d552247450362b7187da81")); // this will find the user by id
+        req.user = new User(dbUser.name, dbUser.email, dbUser.cart, dbUser._id); // this will store the user in the request object
+
     }catch(err){
         console.log(err);
     }
