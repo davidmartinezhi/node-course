@@ -152,7 +152,7 @@ class User {
 
 async getOrders(){
   const db = getDb();
-  return db.collection("orders").find({"user._id": new ObjectId(this._id)}).toArray();
+  return db.collection("orders").find({"user._id": new ObjectId(this._id)}).toArray(); // this will return the orders associated with the user
 }
 
   static async findById(userId) {

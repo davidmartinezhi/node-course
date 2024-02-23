@@ -165,7 +165,7 @@ exports.postOrder = (req, res, next) => {
  * @param {Function} next - The next middleware function.
  */
 exports.getOrders = (req, res, next) => {
-  req.user.getOrders({include: ['products']}) // this will get the orders associated with the user
+  req.user.getOrders() // this will get the orders associated with the user
     .then((orders) => {
       res.render("shop/orders", {
         docTitle: "Your Orders",
