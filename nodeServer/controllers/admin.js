@@ -91,7 +91,7 @@ exports.postEditProduct = async (req, res, next) => {
     await product.save(); // this will save the updated product to the database
     console.log("Updated Product");
     res.redirect("/admin/products");
-    
+
   } catch (err) {
     console.log(err);
   }
@@ -101,7 +101,7 @@ exports.postDeleteProduct = async (req, res, next) => {
   const prodId = req.body.productId; // this will extract the product id from the request body
 
   try {
-    await Product.deleteById(prodId); // this will delete the product from the database
+    await Product.findByIdAndDelete(prodId); // this will delete the product from the database
     console.log("Destroyed Product"); // this will log a message to the console
     res.redirect("/admin/products"); // this will redirect to the products page
   } catch (err) {
