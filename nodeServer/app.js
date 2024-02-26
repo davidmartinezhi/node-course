@@ -15,7 +15,7 @@ const errorController = require("./controllers/error");
 //Database
 // const mongoConnect = require("./util/database").mongoConnect;
 
-// const User = require("./models/user");
+const User = require("./models/user");
 
 /* SEQUELIZE CODE */
 // //Models
@@ -53,17 +53,15 @@ app.use(express.static(path.join(__dirname, "public"))); // this allows us to se
 //urlencoded is a function that returns a middleware function
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// app.use(async (req, res, next) => {
-//   try {
-//     const dbUser = await User.findById(
-//       new mongodb.ObjectId("65d552247450362b7187da81")
-//     ); // this will find the user by id
-//     req.user = new User(dbUser.name, dbUser.email, dbUser.cart, dbUser._id); // this will store the user in the request object
-//   } catch (err) {
-//     console.log(err);
-//   }
-//   next();
-// });
+app.use(async (req, res, next) => {
+  try {
+    const dbUser = await User.findById("65dd22d54b0433f0aa1d3404"); // this will find the user by id
+    req.user = dbUser; // this will store the user in the request object
+  } catch (err) {
+    console.log(err);
+  }
+  next();
+});
 
 //routes
 app.use("/admin", adminRoutes); // this will register the adminRoutes middleware
@@ -73,6 +71,21 @@ app.use("/", errorController.get404); // this will register the errorController 
 mongoose
   .connect(uri)
   .then((result) => {
+    
+    User.findOne().then((user) => {
+      if (!user) {
+        const user = new User({
+          name: "Max",
+          email: "max@test.com",
+          cart: {
+            items: [],
+          },
+        });
+
+        user.save();
+      }
+    });
+
     app.listen(3000, () => console.log("Server is running on port 3000"));
   })
   .catch((err) => {
