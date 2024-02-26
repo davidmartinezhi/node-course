@@ -27,15 +27,15 @@ exports.postAddProduct = async (req, res, next) => {
   const description = req.body.description;
 
   try {
-    const product = new Product(
-      title,
-      imageUrl,
-      description,
-      price,
-      null,
-      req.user._id
-    ); // this will create a new product
-    
+    //in mongoose we pass a javasccript object where we map
+    const product = new Product({
+      title: title,
+      imageUrl: imageUrl,
+      description: description,
+      price: price,
+    }); // this will create a new product
+
+    //mongoose has a save method also
     await product.save(); // this will save the product to the database
     console.log("Created Product");
     res.redirect("/admin/products");

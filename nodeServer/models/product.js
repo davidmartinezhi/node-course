@@ -1,3 +1,32 @@
+const mongoose = require("mongoose");
+
+const Schema = mongoose.Schema;
+
+//id will be created automatically
+// this will create a new schema instance, we pass a javascript object to define the schema
+const productSchema = new Schema({ 
+    //key value pairs
+    title: {
+        type: String,
+        required: true
+    },
+    price: {
+        type: Number,
+        required: true
+    },
+    description: {
+        type: String,
+        required: true
+    },
+    imageUrl: {
+        type: String,
+        required: true
+    },
+});
+
+//based on schema, we create model and export it, we give the model a name. In this case it is Product
+module.exports = mongoose.model("Product", productSchema);
+
 // const mongodb = require("mongodb");
 // const getDb = require("../util/database").getDb;
 
