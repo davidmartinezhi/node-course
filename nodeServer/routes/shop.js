@@ -6,9 +6,9 @@ const shopController = require("../controllers/shop");
 
 const router = express.Router(); //mini express app that we can export
 
-// router.get("/", shopController.getIndex);
+router.get("/", shopController.getIndex);
 
-// router.get("/products", shopController.getProducts);
+router.get("/products", shopController.getProducts);
 // router.get("/products/:productId", shopController.getProduct);
 
 // router.get("/cart", shopController.getCart);

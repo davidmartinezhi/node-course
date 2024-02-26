@@ -7,9 +7,9 @@ const Product = require("../models/product");
  * @param {Function} next - The next middleware function.
  */
 exports.getProducts = (req, res, next) => {
-  // this will fetch all the products with sequelize
-  Product.fetchAll()
+  Product.find() // this will return all the products automatically
     .then((products) => {
+      console.log(products);
       res.render("shop/product-list", {
         prods: products,
         docTitle: "All Products",
@@ -29,7 +29,7 @@ exports.getProducts = (req, res, next) => {
  */
 exports.getIndex = (req, res, next) => {
   // this will fetch all the products with sequelize
-  Product.fetchAll()
+  Product.find()
     .then((products) => {
       res.render("shop/index", {
         prods: products,
