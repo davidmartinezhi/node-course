@@ -70,7 +70,7 @@ exports.getEditProduct = (req, res, next) => {
     .catch((err) => console.log(err));
 };
 
-exports.postEditProduct = (req, res, next) => {
+exports.postEditProduct = async (req, res, next) => {
   //extract info from the product
   const prodId = req.body.productId;
 
@@ -80,18 +80,18 @@ exports.postEditProduct = (req, res, next) => {
   const updatedPrice = req.body.price;
   const updatedDescription = req.body.description;
 
-  const product = new Product(
-    updatedTitle,
-    updatedImageUrl,
-    updatedDescription,
-    updatedPrice,
-    prodId
-  );
-
   try {
-    product.save(prodId); // this will save the updated product to the database
+    //fetch a product from the database
+    const product = await Product.findById(prodId);
+    product.title = updatedTitle;
+    product.imageUrl = updatedImageUrl;
+    product.price = updatedPrice;
+    product.description = updatedDescription;
+
+    await product.save(); // this will save the updated product to the database
     console.log("Updated Product");
     res.redirect("/admin/products");
+    
   } catch (err) {
     console.log(err);
   }
@@ -111,7 +111,7 @@ exports.postDeleteProduct = async (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
   // Product.findAll()
-  Product.fetchAll() // this will get the products associated with the user
+  Product.find() // this will get the products associated with the user
     .then((products) => {
       res.render("admin/products", {
         prods: products,
