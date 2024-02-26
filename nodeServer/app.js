@@ -3,13 +3,17 @@ const path = require("path"); // this is a core module
 const mongodb = require("mongodb");
 const express = require("express");
 const bodyParser = require("body-parser"); // this is a package that allows us to parse the body of the request
+const mongoose = require("mongoose"); // this is a package that allows us to connect to the database
 //const expressHbs = require("express-handlebars");
+
+const env = require("dotenv").config();
+const uri = process.env.MONGODB;
 
 //Controllers
 const errorController = require("./controllers/error");
 
 //Database
-const mongoConnect = require("./util/database").mongoConnect;
+// const mongoConnect = require("./util/database").mongoConnect;
 
 const User = require("./models/user");
 
@@ -50,14 +54,15 @@ app.use(express.static(path.join(__dirname, "public"))); // this allows us to se
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(async (req, res, next) => {
-    try{
-        const dbUser = await User.findById(new mongodb.ObjectId("65d552247450362b7187da81")); // this will find the user by id
-        req.user = new User(dbUser.name, dbUser.email, dbUser.cart, dbUser._id); // this will store the user in the request object
-
-    }catch(err){
-        console.log(err);
-    }
-    next();
+  try {
+    const dbUser = await User.findById(
+      new mongodb.ObjectId("65d552247450362b7187da81")
+    ); // this will find the user by id
+    req.user = new User(dbUser.name, dbUser.email, dbUser.cart, dbUser._id); // this will store the user in the request object
+  } catch (err) {
+    console.log(err);
+  }
+  next();
 });
 
 //routes
@@ -65,9 +70,19 @@ app.use("/admin", adminRoutes); // this will register the adminRoutes middleware
 app.use(shopRoutes); // this will register the shopRoutes middleware
 app.use("/", errorController.get404); // this will register the errorController middleware
 
-mongoConnect(() => {
+mongoose
+  .connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then((result) => {
     app.listen(3000, () => console.log("Server is running on port 3000"));
-});
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+// Connection only with mongoDB, no mongoose
+// mongoConnect(() => {
+//     app.listen(3000, () => console.log("Server is running on port 3000"));
+// });
 
 /* SEQUELIZE CODE */
 // //Associations
