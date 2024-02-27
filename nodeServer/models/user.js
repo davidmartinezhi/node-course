@@ -61,6 +61,7 @@ userSchema.methods.addToCart = async function (product) {
 
 userSchema.methods.getCart = async function () {
     try {
+        // this will populate the cart items with the product details
         const user = await this.populate(["cart.items.productId"]);
         return user.cart;
     }catch(err){
@@ -76,7 +77,7 @@ userSchema.methods.removeFromCart = async function (productId) {
 
     this.cart.items = updatedCartItems; // this will update the user's cart to have all cart items except the one deleted
 
-    return await this.save(); // this will save the user
+    return this.save(); // this will save the user
   } catch (error) {
     console.log(error);
   }
