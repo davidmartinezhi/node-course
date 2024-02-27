@@ -24,6 +24,41 @@ const userSchema = new Schema({
   },
 });
 
+userSchema.methods.addToCart = async function (product) {
+  try {
+    // this will get us the index of the product in the cart
+    const cartProductIndex = this.cart.items.findIndex((cp) => {
+      // this will find the product in the cart
+      return cp.productId.toString() === product._id.toString(); // this will return true if the product exists in the cart
+    });
+
+    let newQuantity = 1; // this will store the new quantity of the product
+    const updatedCartItems = [...this.cart.items]; // this will store the updated cart items
+
+    //product already exists and we are going to update
+    if (cartProductIndex >= 0) {
+      newQuantity = this.cart.items[cartProductIndex].quantity + 1; // this will set the new quantity of the product
+      updatedCartItems[cartProductIndex].quantity = newQuantity; // this will update the quantity of the product
+    }
+
+    //creating a new product
+    else {
+      updatedCartItems.push({
+        productId: product._id,
+        quantity: newQuantity,
+      }); // this will add the product to the cart
+    }
+
+    const updatedCart = { items: updatedCartItems }; // this will store the updated cart
+
+    this.cart = updatedCart; // this will update the user's cart
+
+    return await this.save(); // this will save the user
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = mongoose.model("User", userSchema);
 
 // const mongodb = require("mongodb");
