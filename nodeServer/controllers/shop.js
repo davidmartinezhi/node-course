@@ -17,8 +17,6 @@ exports.getProducts = (req, res, next) => {
       });
     })
     .catch((err) => console.log(err));
-
-
 };
 
 /**
@@ -57,59 +55,33 @@ exports.getIndex = (req, res, next) => {
  * @param {Object} res - The response object.
  * @param {Function} next - The next middleware function.
  */
-exports.getCart = (req, res, next) => {
-  req.user
-    .getCart()
-    .then((products) => {
-      console.log(products);
-      res.render("shop/cart", {
-        docTitle: "Your Cart",
-        path: "/cart",
-        products: products,
-      });
-    })
-    .catch((err) => console.log(err));
-  // Cart.getCart((cart) => {
-  //   // this will fetch the cart
-  //   Product.fetchAll((products) => {
-  //     // this will fetch all the products
+exports.getCart = async (req, res, next) => {
 
-  //     const cartProducts = []; // this will store the products in the cart
-
-  //     for (product of products) {
-  //       const cartProductData = cart.products.find(
-  //         (prod) => prod.id === product.id
-  //       ); // this will find the product in the cart
-  //       if (cartProductData) {
-  //         // this will check if the product is in the cart
-  //         //product.qty = cart.products.find(prod => prod.id === product.id).qty; // this will set the quantity of the product
-  //         cartProducts.push({ productData: product, qty: cartProductData.qty }); // this will add the product to the cart
-  //       }
-  //     }
-
-  //     res.render("shop/cart", {
-  //       docTitle: "Your Cart",
-  //       path: "/cart",
-  //       products: cartProducts,
-  //     });
-  //   });
-  // });
+  try{
+    const user = await req.user.populate(["cart.items.productId"]);
+    console.log(user.cart.items);
+    const products = user.cart.items;
+    res.render("shop/cart", {
+      docTitle: "Your Cart",
+      path: "/cart",
+      products: products,
+    });
+  }catch(err){
+    console.log(err);
+  }
 };
 
 exports.postCart = async (req, res, next) => {
-
   const prodId = req.body.productId; // this will get the product id from the request body
 
-  try{
+  try {
     const product = await Product.findById(prodId); // this will store the product
     const result = await req.user.addToCart(product); // this will add the product to the cart
     console.log(result);
     res.redirect("/cart");
-
-  }catch(error){
+  } catch (error) {
     console.log(error);
   }
-
 
   // try {
   //   const prodId = req.body.productId; // this will get the product id from the request body
@@ -147,12 +119,11 @@ exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 exports.postOrder = (req, res, next) => {
-
   let fetchedCart; // this will store the cart
 
   req.user
     .addOrder()
-    .then(result => {
+    .then((result) => {
       res.redirect("/orders");
     })
     .catch((err) => console.log(err));
@@ -165,12 +136,13 @@ exports.postOrder = (req, res, next) => {
  * @param {Function} next - The next middleware function.
  */
 exports.getOrders = (req, res, next) => {
-  req.user.getOrders() // this will get the orders associated with the user
+  req.user
+    .getOrders() // this will get the orders associated with the user
     .then((orders) => {
       res.render("shop/orders", {
         docTitle: "Your Orders",
         path: "/orders",
-        orders: orders
+        orders: orders,
       });
     })
     .catch((err) => console.log(err));
@@ -201,5 +173,4 @@ exports.getProduct = (req, res, next) => {
       });
     })
     .catch((err) => console.log(err));
-
 };
