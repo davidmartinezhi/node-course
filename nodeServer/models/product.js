@@ -22,6 +22,11 @@ const productSchema = new Schema({
         type: String,
         required: true
     },
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: "User", // this will reference the User model
+        required: true
+    }
 });
 
 //based on schema, we create model and export it, we give the model a name. In this case it is Product

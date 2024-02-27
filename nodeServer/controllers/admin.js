@@ -33,6 +33,9 @@ exports.postAddProduct = async (req, res, next) => {
       imageUrl: imageUrl,
       description: description,
       price: price,
+
+      //mongoose will automatically extract the id from the user object
+      userId: req.user, // this will create a new product associated with the user
     }); // this will create a new product
 
     //mongoose has a save method also
@@ -112,7 +115,10 @@ exports.postDeleteProduct = async (req, res, next) => {
 exports.getProducts = (req, res, next) => {
   // Product.findAll()
   Product.find() // this will get the products associated with the user
+  //.select("title price -_id") // this will select the title and price of the products and exclude the id
+  //.populate("userId") //this will populate ids of references with the complete information, second argument is the fields we want to populate
     .then((products) => {
+      console.log(products);
       res.render("admin/products", {
         prods: products,
         docTitle: "Admin Products",
