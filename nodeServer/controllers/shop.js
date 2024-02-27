@@ -58,9 +58,10 @@ exports.getIndex = (req, res, next) => {
 exports.getCart = async (req, res, next) => {
 
   try{
-    const user = await req.user.populate(["cart.items.productId"]);
-    console.log(user.cart.items);
-    const products = user.cart.items;
+    const cart = await req.user.getCart();
+
+    console.log(cart.items);
+    const products = cart.items;
     res.render("shop/cart", {
       docTitle: "Your Cart",
       path: "/cart",
@@ -82,26 +83,6 @@ exports.postCart = async (req, res, next) => {
   } catch (error) {
     console.log(error);
   }
-
-  // try {
-  //   const prodId = req.body.productId; // this will get the product id from the request body
-  //   const cart = await req.user.getCart(); // this will store the cart
-  //   const cartProduct = await cart.getProducts({ where: { id: prodId } }); // this will store the product in the cart
-  //   const fetchedProduct = await Product.findByPk(prodId); // this will store the fetched product
-
-  //   const product = cartProduct.length > 0 && cartProduct[0];
-  //   let newQuantity = 1; // this will store the new quantity of the product
-
-  //   if (product) {
-  //     const oldQuantity = product.cartItem.quantity; // this will store the old quantity of the product
-  //     newQuantity = oldQuantity + 1; // this will set the new quantity of the product
-  //   }
-
-  //   cart.addProduct(fetchedProduct, { through: { quantity: newQuantity } }); // this will add the product to the cart
-  //   res.redirect("/cart");
-  // } catch (err) {
-  //   console.log(err);
-  // }
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {

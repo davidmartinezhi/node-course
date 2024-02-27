@@ -59,6 +59,15 @@ userSchema.methods.addToCart = async function (product) {
   }
 };
 
+userSchema.methods.getCart = async function () {
+    try {
+        const user = await this.populate(["cart.items.productId"]);
+        return user.cart;
+    }catch(err){
+        console.log(err);
+    }
+}
+
 userSchema.methods.removeFromCart = async function (productId) {
   try {
     const updatedCartItems = this.cart.items.filter((item) => {
