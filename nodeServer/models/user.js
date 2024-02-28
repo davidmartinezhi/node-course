@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const Order = require("../models/order");
 
 const userSchema = new Schema({
   name: {
@@ -86,6 +87,17 @@ userSchema.methods.removeFromCart = async function (productId) {
 userSchema.methods.clearCart = async function () {
     this.cart = { items: [] }; // this will reset the cart. we clear cart on user object
     return await this.save(); // this will save the user
+};
+
+userSchema.methods.getOrders = async function () {
+    try {
+        // this will populate the cart items with the product details
+        const orders = await Order.find({"user.userId": this._id});
+        console.log(orders);
+        return orders;
+    }catch(err){
+        console.log(err);
+    }
 };
 
 module.exports = mongoose.model("User", userSchema);

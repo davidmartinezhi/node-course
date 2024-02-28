@@ -104,9 +104,9 @@ exports.postOrder = async (req, res, next) => {
   try {
     const cart = await req.user.getCart();
     // console.log(cart.items);
-    
+
     const products = cart.items.map((i) => {
-      return { quantity: i.quantity, product: {...i.productId._doc} };
+      return { quantity: i.quantity, product: { ...i.productId._doc } };
     }); // this will get the products in the expected format
     // console.log("====================================");
     // console.log(products);
@@ -135,17 +135,19 @@ exports.postOrder = async (req, res, next) => {
  * @param {Object} res - The response object.
  * @param {Function} next - The next middleware function.
  */
-exports.getOrders = (req, res, next) => {
-  req.user
-    .getOrders() // this will get the orders associated with the user
-    .then((orders) => {
-      res.render("shop/orders", {
-        docTitle: "Your Orders",
-        path: "/orders",
-        orders: orders,
-      });
-    })
-    .catch((err) => console.log(err));
+exports.getOrders = async (req, res, next) => {
+  try {
+
+    const orders = await req.user.getOrders();
+
+    res.render("shop/orders", {
+      docTitle: "Your Orders",
+      path: "/orders",
+      orders: orders,
+    });
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 /**
