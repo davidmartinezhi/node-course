@@ -7,7 +7,7 @@ const mongoose = require("mongoose"); // this is a package that allows us to con
 //const expressHbs = require("express-handlebars");
 
 const env = require("dotenv").config();
-const uri = process.env.MONGODB;
+const uri = env.parsed.MONGODB;
 
 //Controllers
 const errorController = require("./controllers/error");
@@ -16,15 +16,6 @@ const errorController = require("./controllers/error");
 // const mongoConnect = require("./util/database").mongoConnect;
 
 const User = require("./models/user");
-
-/* SEQUELIZE CODE */
-// //Models
-// const Product = require("./models/product");
-// const User = require("./models/user");
-// const Cart = require("./models/cart");
-// const CartItem = require("./models/cart-item");
-// const Order = require("./models/order");
-// const OrderItem = require("./models/order-item");
 
 const app = express(); // this initializes a new express object where the framwework stores and manages things for us
 
@@ -69,9 +60,9 @@ app.use(shopRoutes); // this will register the shopRoutes middleware
 app.use("/", errorController.get404); // this will register the errorController middleware
 
 mongoose
-  .connect(uri)
+  .connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then((result) => {
-    
+
     User.findOne().then((user) => {
       if (!user) {
         const user = new User({

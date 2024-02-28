@@ -13,7 +13,7 @@ exports.getProducts = (req, res, next) => {
       console.log(products);
       res.render("shop/product-list", {
         prods: products,
-        docTitle: "All Products",
+        pageTitle: "All Products",
         path: "/products",
       });
     })
@@ -32,7 +32,7 @@ exports.getIndex = (req, res, next) => {
     .then((products) => {
       res.render("shop/index", {
         prods: products,
-        docTitle: "Shop",
+        pageTitle: "Shop",
         path: "/",
       });
     })
@@ -43,7 +43,7 @@ exports.getIndex = (req, res, next) => {
   //   .then(([rows, fieldData]) => {
   //     res.render("shop/index", {
   //       prods: rows,
-  //       docTitle: "Shop",
+  //       pageTitle: "Shop",
   //       path: "/",
   //     });
   //   })
@@ -63,7 +63,7 @@ exports.getCart = async (req, res, next) => {
     console.log(cart.items);
     const products = cart.items;
     res.render("shop/cart", {
-      docTitle: "Your Cart",
+      pageTitle: "Your Cart",
       path: "/cart",
       products: products,
     });
@@ -141,7 +141,7 @@ exports.getOrders = async (req, res, next) => {
     const orders = await req.user.getOrders();
 
     res.render("shop/orders", {
-      docTitle: "Your Orders",
+      pageTitle: "Your Orders",
       path: "/orders",
       orders: orders,
     });
@@ -158,7 +158,7 @@ exports.getOrders = async (req, res, next) => {
  */
 exports.getCheckout = (req, res, next) => {
   res.render("shop/checkout", {
-    docTitle: "Checkout",
+    pageTitle: "Checkout",
     path: "/checkout",
   });
 };
@@ -170,7 +170,7 @@ exports.getProduct = (req, res, next) => {
     .then((product) => {
       res.render("shop/product-detail", {
         product: product,
-        docTitle: product.title,
+        pageTitle: product.title,
         path: "/products",
       });
     })

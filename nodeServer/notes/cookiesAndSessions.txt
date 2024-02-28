@@ -1,0 +1,29 @@
+Cookie:
+User interacts with our views (front end)
+from inside that view if user sends a request we send a response with cookies
+cookie is only important to store information from the browser for the user
+cookies are stored on the client side
+
+
+
+Explaining Cookies to a 5-Year-Old:
+Imagine you have a favorite toy store you always go to, and every time you visit, 
+the store owner remembers your name and what toys you like. How do they remember? 
+Well, imagine each time you visit, you give them a special card that has your name 
+and favorite toys written on it. 
+The next time you come back, you show them the card, and they say, 
+"Oh, I remember you! You like these toys!" That's kind of what cookies do on the internet. 
+When you visit a website, the website gives your computer a little reminder note (a "cookie"), 
+so next time you visit, the website can remember things about you, like what you like to see on the website!
+
+Explaining Cookies to a 10-Year-Old:
+You know how when you play a game or use an app on the internet, and it remembers your 
+progress or what you did last time you were there? That's because of something called cookies. 
+Think of cookies like tiny notes or stickers that a website leaves on your computer or tablet. 
+These notes are safe and only the website that gave you the note can see what's written on it. 
+They can have information like your username, the pages you visited on the site, or even what you 
+put in a shopping cart if you're buying something online. So, next time you go back to that site, 
+it can read its own note and remember things about you to make your visit more personal, like keeping 
+you logged in or showing you things you might like. It's a way for websites to make your experience 
+better and more customized to you!
+
