@@ -1,4 +1,5 @@
 const Product = require("../models/product");
+const Order = require("../models/order");
 
 /**
  * Get all products and render the product list view.
@@ -56,8 +57,7 @@ exports.getIndex = (req, res, next) => {
  * @param {Function} next - The next middleware function.
  */
 exports.getCart = async (req, res, next) => {
-
-  try{
+  try {
     const cart = await req.user.getCart();
 
     console.log(cart.items);
@@ -67,7 +67,7 @@ exports.getCart = async (req, res, next) => {
       path: "/cart",
       products: products,
     });
-  }catch(err){
+  } catch (err) {
     console.log(err);
   }
 };
@@ -100,15 +100,31 @@ exports.postCartDeleteProduct = (req, res, next) => {
   // }); // this will get the product from the database
 };
 
-exports.postOrder = (req, res, next) => {
-  let fetchedCart; // this will store the cart
+exports.postOrder = async (req, res, next) => {
+  try {
+    const cart = await req.user.getCart()
+    // console.log(cart.items);
+    
+    const products = cart.items.map((i) => {
+      return { quantity: i.quantity, product: i.productId };
+    }); // this will get the products in the expected format
+    // console.log("====================================");
+    // console.log(products);
 
-  req.user
-    .addOrder()
-    .then((result) => {
-      res.redirect("/orders");
-    })
-    .catch((err) => console.log(err));
+    const order = new Order({
+      user: {
+        name: req.user.name, // this will store the user name
+        userId: req.user, // this will store the user id
+      },
+      products: products, // this will store the products in the cart
+    });
+
+    await order.save(); // this will save the order to the database
+
+    res.redirect("/orders"); // this will redirect to the orders page
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 /**
