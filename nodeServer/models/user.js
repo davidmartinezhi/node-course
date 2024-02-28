@@ -67,7 +67,7 @@ userSchema.methods.getCart = async function () {
     }catch(err){
         console.log(err);
     }
-}
+};
 
 userSchema.methods.removeFromCart = async function (productId) {
   try {
@@ -81,6 +81,11 @@ userSchema.methods.removeFromCart = async function (productId) {
   } catch (error) {
     console.log(error);
   }
+};
+
+userSchema.methods.clearCart = async function () {
+    this.cart = { items: [] }; // this will reset the cart. we clear cart on user object
+    return await this.save(); // this will save the user
 };
 
 module.exports = mongoose.model("User", userSchema);

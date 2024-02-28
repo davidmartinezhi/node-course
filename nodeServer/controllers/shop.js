@@ -102,7 +102,7 @@ exports.postCartDeleteProduct = (req, res, next) => {
 
 exports.postOrder = async (req, res, next) => {
   try {
-    const cart = await req.user.getCart()
+    const cart = await req.user.getCart();
     // console.log(cart.items);
     
     const products = cart.items.map((i) => {
@@ -120,6 +120,8 @@ exports.postOrder = async (req, res, next) => {
     });
 
     await order.save(); // this will save the order to the database
+
+    await req.user.clearCart(); // this will clear the users cart
 
     res.redirect("/orders"); // this will redirect to the orders page
   } catch (err) {
