@@ -106,7 +106,7 @@ exports.postOrder = async (req, res, next) => {
     // console.log(cart.items);
     
     const products = cart.items.map((i) => {
-      return { quantity: i.quantity, product: i.productId };
+      return { quantity: i.quantity, product: {...i.productId._doc} };
     }); // this will get the products in the expected format
     // console.log("====================================");
     // console.log(products);
