@@ -1,10 +1,8 @@
 //const http = require('http'); //without express
 const path = require("path"); // this is a core module
-const mongodb = require("mongodb");
 const express = require("express");
 const bodyParser = require("body-parser"); // this is a package that allows us to parse the body of the request
 const mongoose = require("mongoose"); // this is a package that allows us to connect to the database
-//const expressHbs = require("express-handlebars");
 
 const env = require("dotenv").config();
 const uri = env.parsed.MONGODB;
@@ -12,31 +10,17 @@ const uri = env.parsed.MONGODB;
 //Controllers
 const errorController = require("./controllers/error");
 
-//Database
-// const mongoConnect = require("./util/database").mongoConnect;
-
 const User = require("./models/user");
 
 const app = express(); // this initializes a new express object where the framwework stores and manages things for us
 
-//pug template engine
-//app.set("view engine", "pug"); // this allows us to set any value globally that express will manage for us
-
-//express-handlebars template engine
-// app.engine(
-//   "hbs",
-//   expressHbs({
-//     layoutsDir: "views/layouts/",
-//     defaultLayout: "main-layout",
-//     extname: "hbs",
-//   })
-// );
 app.set("view engine", "ejs");
 app.set("views", "views"); // this allows us to set any value globally that express will manage for us
 
 //Routes
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
+const authRoutes = require("./routes/auth");
 
 // serving static files
 app.use(express.static(path.join(__dirname, "public"))); // this allows us to serve static files like css files
@@ -57,6 +41,7 @@ app.use(async (req, res, next) => {
 //routes
 app.use("/admin", adminRoutes); // this will register the adminRoutes middleware
 app.use(shopRoutes); // this will register the shopRoutes middleware
+app.use(authRoutes); // this will register the authRoutes middleware
 app.use("/", errorController.get404); // this will register the errorController middleware
 
 mongoose
