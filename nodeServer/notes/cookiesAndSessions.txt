@@ -4,7 +4,7 @@ from inside that view if user sends a request we send a response with cookies
 cookie is only important to store information from the browser for the user
 cookies are stored on the client side
 
-
+With cookies we can store data in the browser of a single user, to personalize the experience
 
 Explaining Cookies to a 5-Year-Old:
 Imagine you have a favorite toy store you always go to, and every time you visit, 
@@ -27,3 +27,36 @@ it can read its own note and remember things about you to make your visit more p
 you logged in or showing you things you might like. It's a way for websites to make your experience 
 better and more customized to you!
 
+Storing data in client side is interesting, but sensitive data should not be stored in cookies. 
+since user can manipulate it, for that we can use sessions.
+
+Cookies are a popular instrument for tracking customers
+
+Cookie can also be sent to another page. tracking pixel
+google can track on which page we are and how we move through the web to find this
+
+
+Configuring cookies:
+We can set more thing that just valus in key value pairs
+we can add more keyvalue pairs such as res.setHeader("Set-Cookie", "loggedIn=true;Max-Age=10")
+
+Max-Age, is how much can a cookie survive in seconds. this is applied in banks where authentication expires
+Domain=,to where cookie should be sent
+Secure, page will only be sent through https page
+HttpOnly, now we cant access cookie value through client side javascript
+
+Often we will use packages to set cookies.
+
+
+# Sessions
+Sessions help us storing sensitive information across requests
+
+Information is stored in backend on a session. It is not stored in request nor variable in express app
+We only want to share info across all request from the same user
+
+We store it in memory, but then a session storage. A client needs to tell the server to which session it belongs
+
+We will use cookie to store id of session. change id will not work, because value will be hashed and server can
+confirm we have not fidle with it.
+
+Session stored on server side and we utilize cookie to save hashed id of which session belongs to that user
