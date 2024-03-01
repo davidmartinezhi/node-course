@@ -3,7 +3,10 @@ const path = require("path"); // this is a core module
 const express = require("express");
 const bodyParser = require("body-parser"); // this is a package that allows us to parse the body of the request
 const mongoose = require("mongoose"); // this is a package that allows us to connect to the database
-const session = require("express-session");
+const session = require("express-session"); // this is a package that allows us to store the session in the database
+
+//session object is passed to the function in order to store the session in the database
+const mongoDBStore = require("connect-mongodb-session")(session); // this is a package that allows us to store the session in the database
 
 const env = require("dotenv").config();
 const uri = env.parsed.MONGODB;
@@ -14,6 +17,12 @@ const errorController = require("./controllers/error");
 const User = require("./models/user");
 
 const app = express(); // this initializes a new express object where the framwework stores and manages things for us
+const store = new mongoDBStore({
+  uri: uri, // this is the uri to the database
+  collection: "sessions", // this is the name of the collection where the sessions will be stored
+  //expires: 1000 * 60 * 60 * 24, // this will set the session to expire in 24 hours
+});
+
 
 app.set("view engine", "ejs");
 app.set("views", "views"); // this allows us to set any value globally that express will manage for us
@@ -30,6 +39,7 @@ app.use(session({
   secret: "mysecret", // this is a secret key that will be used to sign in the hash
   resave: false, // this will only save the session if the session has been modified
   saveUninitialized: false, // this will only save the session if the session has been modified
+  store: store, // this will store the session in the database, this is how sessions should be stored for production
   //cookie: {maxAge: 1000 * 60 * 60 * 24} // this will set the cookie to expire in 24 hours
 }));
 

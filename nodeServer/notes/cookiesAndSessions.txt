@@ -62,3 +62,4 @@ confirm we have not fidle with it.
 Session stored on server side and we utilize cookie to save hashed id of which session belongs to that user
 
 Express session helps manage sessions
+Sessions should be stored in database, connect-mongodb-session helps to do this
