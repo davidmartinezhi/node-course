@@ -60,3 +60,5 @@ We will use cookie to store id of session. change id will not work, because valu
 confirm we have not fidle with it.
 
 Session stored on server side and we utilize cookie to save hashed id of which session belongs to that user
+
+Express session helps manage sessions

@@ -3,6 +3,7 @@ const path = require("path"); // this is a core module
 const express = require("express");
 const bodyParser = require("body-parser"); // this is a package that allows us to parse the body of the request
 const mongoose = require("mongoose"); // this is a package that allows us to connect to the database
+const session = require("express-session");
 
 const env = require("dotenv").config();
 const uri = env.parsed.MONGODB;
@@ -24,6 +25,13 @@ const authRoutes = require("./routes/auth");
 
 // serving static files
 app.use(express.static(path.join(__dirname, "public"))); // this allows us to serve static files like css files
+
+app.use(session({
+  secret: "mysecret", // this is a secret key that will be used to sign in the hash
+  resave: false, // this will only save the session if the session has been modified
+  saveUninitialized: false, // this will only save the session if the session has been modified
+  //cookie: {maxAge: 1000 * 60 * 60 * 24} // this will set the cookie to expire in 24 hours
+}));
 
 //urlencoded is a function that returns a middleware function
 app.use(bodyParser.urlencoded({ extended: false }));
