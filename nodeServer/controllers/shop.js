@@ -15,7 +15,7 @@ exports.getProducts = (req, res, next) => {
         prods: products,
         pageTitle: "All Products",
         path: "/products",
-        isAuthenticated: req.isLoggedIn,
+        isAuthenticated: req.session.isLoggedIn,
 
       });
     })
@@ -36,7 +36,7 @@ exports.getIndex = (req, res, next) => {
         prods: products,
         pageTitle: "Shop",
         path: "/",
-        isAuthenticated: req.isLoggedIn,
+        isAuthenticated: req.session.isLoggedIn,
 
       });
     })
@@ -62,7 +62,7 @@ exports.getIndex = (req, res, next) => {
  */
 exports.getCart = async (req, res, next) => {
   try {
-    const cart = await req.user.getCart();
+    const cart = await req.session.user.getCart();
 
     console.log(cart.items);
     const products = cart.items;
@@ -70,7 +70,7 @@ exports.getCart = async (req, res, next) => {
       pageTitle: "Your Cart",
       path: "/cart",
       products: products,
-      isAuthenticated: req.isLoggedIn,
+      isAuthenticated: req.session.isLoggedIn,
 
     });
   } catch (err) {
@@ -83,7 +83,7 @@ exports.postCart = async (req, res, next) => {
 
   try {
     const product = await Product.findById(prodId); // this will store the product
-    const result = await req.user.addToCart(product); // this will add the product to the cart
+    const result = await req.session.user.addToCart(product); // this will add the product to the cart
     console.log(result);
     res.redirect("/cart");
   } catch (error) {
@@ -93,7 +93,7 @@ exports.postCart = async (req, res, next) => {
 
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId; // this will get the product id from the request body
-  req.user
+  req.session.user
     .removeFromCart(prodId)
     .then((result) => {
       console.log(result);
@@ -108,7 +108,7 @@ exports.postCartDeleteProduct = (req, res, next) => {
 
 exports.postOrder = async (req, res, next) => {
   try {
-    const cart = await req.user.getCart();
+    const cart = await req.session.user.getCart();
     // console.log(cart.items);
 
     const products = cart.items.map((i) => {
@@ -119,15 +119,15 @@ exports.postOrder = async (req, res, next) => {
 
     const order = new Order({
       user: {
-        name: req.user.name, // this will store the user name
-        userId: req.user, // this will store the user id
+        name: req.session.user.name, // this will store the user name
+        userId: req.session.user, // this will store the user id
       },
       products: products, // this will store the products in the cart
     });
 
     await order.save(); // this will save the order to the database
 
-    await req.user.clearCart(); // this will clear the users cart
+    await req.session.user.clearCart(); // this will clear the users cart
 
     res.redirect("/orders"); // this will redirect to the orders page
   } catch (err) {
@@ -144,13 +144,13 @@ exports.postOrder = async (req, res, next) => {
 exports.getOrders = async (req, res, next) => {
   try {
 
-    const orders = await req.user.getOrders();
+    const orders = await req.session.user.getOrders();
 
     res.render("shop/orders", {
       pageTitle: "Your Orders",
       path: "/orders",
       orders: orders,
-      isAuthenticated: req.isLoggedIn,
+      isAuthenticated: req.session.isLoggedIn,
     });
   } catch (err) {
     console.log(err);
@@ -167,7 +167,7 @@ exports.getCheckout = (req, res, next) => {
   res.render("shop/checkout", {
     pageTitle: "Checkout",
     path: "/checkout",
-    isAuthenticated: req.isLoggedIn,
+    isAuthenticated: req.session.isLoggedIn,
   });
 };
 
@@ -180,7 +180,7 @@ exports.getProduct = (req, res, next) => {
         product: product,
         pageTitle: product.title,
         path: "/products",
-        isAuthenticated: req.isLoggedIn,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));

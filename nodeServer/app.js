@@ -35,6 +35,10 @@ const authRoutes = require("./routes/auth");
 // serving static files
 app.use(express.static(path.join(__dirname, "public"))); // this allows us to serve static files like css files
 
+
+//urlencoded is a function that returns a middleware function
+app.use(bodyParser.urlencoded({ extended: false }));
+
 app.use(session({
   secret: "mysecret", // this is a secret key that will be used to sign in the hash
   resave: false, // this will only save the session if the session has been modified
@@ -43,18 +47,6 @@ app.use(session({
   //cookie: {maxAge: 1000 * 60 * 60 * 24} // this will set the cookie to expire in 24 hours
 }));
 
-//urlencoded is a function that returns a middleware function
-app.use(bodyParser.urlencoded({ extended: false }));
-
-app.use(async (req, res, next) => {
-  try {
-    const dbUser = await User.findById("65dd22d54b0433f0aa1d3404"); // this will find the user by id
-    req.user = dbUser; // this will store the user in the request object
-  } catch (err) {
-    console.log(err);
-  }
-  next();
-});
 
 //routes
 app.use("/admin", adminRoutes); // this will register the adminRoutes middleware

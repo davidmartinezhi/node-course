@@ -11,7 +11,7 @@ exports.getAddProduct = (req, res, next) => {
     pageTitle: "Add Product",
     path: "/admin/add-product",
     editing: false,
-    isAuthenticated: req.isLoggedIn,
+    isAuthenticated: req.session.isLoggedIn,
   });
 };
 
@@ -26,6 +26,7 @@ exports.postAddProduct = async (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
+  console.log(req.session.user);
 
   try {
     //in mongoose we pass a javasccript object where we map
@@ -34,9 +35,8 @@ exports.postAddProduct = async (req, res, next) => {
       imageUrl: imageUrl,
       description: description,
       price: price,
-
       //mongoose will automatically extract the id from the user object
-      userId: req.user, // this will create a new product associated with the user
+      userId: req.session.user, // this will create a new product associated with the user
     }); // this will create a new product
 
     //mongoose has a save method also
@@ -69,7 +69,7 @@ exports.getEditProduct = (req, res, next) => {
         path: "/admin/edit-product",
         editing: editMode,
         product: product,
-        isAuthenticated: req.isLoggedIn,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));
@@ -125,7 +125,7 @@ exports.getProducts = (req, res, next) => {
         prods: products,
         pageTitle: "Admin Products",
         path: "/admin/products",
-        isAuthenticated: req.isLoggedIn,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));
