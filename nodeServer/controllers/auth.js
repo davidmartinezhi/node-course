@@ -14,7 +14,10 @@ module.exports = class ControllerAuth {
             const user = await User.findById('65dd22d54b0433f0aa1d3404');
             req.session.user = user;
             req.session.isLoggedIn = true;
-            res.redirect('/');
+            await req.session.save((err) => {
+                console.log(err);
+                res.redirect('/');
+            }); // this will save the session to the database before we continue
         }
         catch(err){
             console.log(err);
