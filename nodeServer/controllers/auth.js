@@ -20,6 +20,19 @@ module.exports = class ControllerAuth {
             console.log(err);
         }
       };
+
+      static postLogout = async (req, res, next) => {
+        try{
+            //session cookie on browser will still appear, but it will be invalid
+            req.session.destroy((err) => {
+                console.log(err);
+                res.redirect('/');
+            });
+        }
+        catch(err){
+            console.log(err);
+        }
+      };
 }
 
 // exports.getLogin = async (req, res, next) => {
