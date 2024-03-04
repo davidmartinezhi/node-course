@@ -23,7 +23,6 @@ const store = new mongoDBStore({
   //expires: 1000 * 60 * 60 * 24, // this will set the session to expire in 24 hours
 });
 
-
 app.set("view engine", "ejs");
 app.set("views", "views"); // this allows us to set any value globally that express will manage for us
 
@@ -35,18 +34,31 @@ const authRoutes = require("./routes/auth");
 // serving static files
 app.use(express.static(path.join(__dirname, "public"))); // this allows us to serve static files like css files
 
-
 //urlencoded is a function that returns a middleware function
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use(session({
-  secret: "mysecret", // this is a secret key that will be used to sign in the hash
-  resave: false, // this will only save the session if the session has been modified
-  saveUninitialized: false, // this will only save the session if the session has been modified
-  store: store, // this will store the session in the database, this is how sessions should be stored for production
-  //cookie: {maxAge: 1000 * 60 * 60 * 24} // this will set the cookie to expire in 24 hours
-}));
+app.use(
+  session({
+    secret: "mysecret", // this is a secret key that will be used to sign in the hash
+    resave: false, // this will only save the session if the session has been modified
+    saveUninitialized: false, // this will only save the session if the session has been modified
+    store: store, // this will store the session in the database, this is how sessions should be stored for production
+    //cookie: {maxAge: 1000 * 60 * 60 * 24} // this will set the cookie to expire in 24 hours
+  })
+);
 
+app.use(async (req, res, next) => {
+
+  if(!req.session.user) {return next()};
+
+  try {
+    const user = await User.findById(req.session.user._id); // this will find the user by id
+    req.user = user; // this will store the user in the request object
+    next();
+  } catch (err) {
+    console.log(err);
+  }
+});
 
 //routes
 app.use("/admin", adminRoutes); // this will register the adminRoutes middleware
@@ -57,7 +69,6 @@ app.use("/", errorController.get404); // this will register the errorController 
 mongoose
   .connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then((result) => {
-
     User.findOne().then((user) => {
       if (!user) {
         const user = new User({

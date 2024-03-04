@@ -26,7 +26,6 @@ exports.postAddProduct = async (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  console.log(req.session.user);
 
   try {
     //in mongoose we pass a javasccript object where we map
@@ -36,7 +35,7 @@ exports.postAddProduct = async (req, res, next) => {
       description: description,
       price: price,
       //mongoose will automatically extract the id from the user object
-      userId: req.session.user, // this will create a new product associated with the user
+      userId: req.user, // this will create a new product associated with the user
     }); // this will create a new product
 
     //mongoose has a save method also
