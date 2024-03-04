@@ -1,42 +1,40 @@
 const User = require("../models/user"); // this will import the user model
 
 module.exports = class ControllerAuth {
-    static getLogin(req, res) {
-        res.render('auth/login', {
-            path: '/login',
-            pageTitle: 'Login',
-            isAuthenticated: req.session.isLoggedIn
-        })
-    }
- 
-    static postLogin = async (req, res, next) => {
-        try{
-            const user = await User.findById('65dd22d54b0433f0aa1d3404');
-            req.session.user = user;
-            req.session.isLoggedIn = true;
-            await req.session.save((err) => {
-                console.log(err);
-                res.redirect('/');
-            }); // this will save the session to the database before we continue
-        }
-        catch(err){
-            console.log(err);
-        }
-      };
+  static getLogin(req, res) {
+    res.render("auth/login", {
+      path: "/login",
+      pageTitle: "Login",
+      isAuthenticated: req.session.isLoggedIn,
+    });
+  }
 
-      static postLogout = async (req, res, next) => {
-        try{
-            //session cookie on browser will still appear, but it will be invalid
-            req.session.destroy((err) => {
-                console.log(err);
-                res.redirect('/');
-            });
-        }
-        catch(err){
-            console.log(err);
-        }
-      };
-}
+  static postLogin = async (req, res, next) => {
+    try {
+      const user = await User.findById("65dd22d54b0433f0aa1d3404");
+      req.session.user = user;
+      req.session.isLoggedIn = true;
+      await req.session.save((err) => {
+        console.log(err);
+        res.redirect("/");
+      }); // this will save the session to the database before we continue. use it in scenarios where we want to make sure session is saved before redirecting
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  static postLogout = async (req, res, next) => {
+    try {
+      //session cookie on browser will still appear, but it will be invalid
+      req.session.destroy((err) => {
+        console.log(err);
+        res.redirect("/");
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+};
 
 // exports.getLogin = async (req, res, next) => {
 //   try {
@@ -68,5 +66,3 @@ module.exports = class ControllerAuth {
 //     console.log(err);
 //   }
 // };
-
-

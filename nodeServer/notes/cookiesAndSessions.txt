@@ -65,3 +65,22 @@ Express session helps manage sessions
 Sessions should be stored in database, connect-mongodb-session helps to do this and we store session in database
 
 User Info we dont want to lose after every response and that should not be visible to other users
+
+Cookie that expire when session is closed, are session cookies
+Permanent cookie live up until a certain date. It is only invalid when it expires
+
+Summary
+
+Cookie:
+    - Great for storing data in the client
+    - Do NOT store sensitive data here, it can be viewed and manipulated
+    - Cookies can be configured to expire 
+    - Works well with sessions
+
+Sessions:
+    - Stored on the server
+    - Great for storing sensitive data
+    - You can store anything
+    - Often used for storing user data and authentication status
+    - Identified via cookie
+    - You can use different storages for saving your sessions on the server
