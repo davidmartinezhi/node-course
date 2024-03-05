@@ -34,6 +34,16 @@ module.exports = class ControllerAuth {
       console.log(err);
     }
   };
+
+  static postSignup = (req, res, next) => {};
+
+  static getSignup = (req, res, next) => {
+    res.render('auth/signup', {
+      path: '/signup',
+      pageTitle: 'Signup',
+      isAuthenticated: false
+    });
+  };
 };
 
 // exports.getLogin = async (req, res, next) => {
