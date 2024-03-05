@@ -1,4 +1,5 @@
 const User = require("../models/user"); // this will import the user model
+const bcrypt = require("bcryptjs"); // this will import the bcryptjs package
 
 module.exports = class ControllerAuth {
   static getLogin(req, res) {
@@ -35,7 +36,56 @@ module.exports = class ControllerAuth {
     }
   };
 
-  static postSignup = (req, res, next) => {};
+  static postSignup = async (req, res, next) => {
+
+    //retrieve the user info from the request body
+    const email = req.body.email;
+    const password = req.body.password;
+    const confirmPassword = req.body.confirmPassword;
+
+    //validate user input
+        //... code to validate user input
+
+    
+    try{
+        //check if the user already exists
+        const userExists = await User.findOne({email: email});
+
+
+        //if the user exists, redirect to the signup page
+        if(userExists){
+            return res.redirect("/signup");
+        }
+
+        //create a new user
+        console.log("Creating a new user");
+
+        //hash the password
+        const hashedPassword = await bcrypt.hash(password, 12);
+
+        const user = new User({
+            name: "John",
+            email: email,
+            password: hashedPassword,
+            cart: {items: []}
+        });
+
+        //save the user to the database
+        const result = await user.save();
+        console.log(result);
+
+        //redirect to the login page
+        res.redirect("/login");
+
+    }catch(err){
+      console.log(err);
+    }
+
+
+
+
+
+  };
 
   static getSignup = (req, res, next) => {
     res.render('auth/signup', {

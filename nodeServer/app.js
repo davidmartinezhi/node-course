@@ -69,20 +69,6 @@ app.use("/", errorController.get404); // this will register the errorController 
 mongoose
   .connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then((result) => {
-    User.findOne().then((user) => {
-      if (!user) {
-        const user = new User({
-          name: "Max",
-          email: "max@test.com",
-          cart: {
-            items: [],
-          },
-        });
-
-        user.save();
-      }
-    });
-
     app.listen(3000, () => console.log("Server is running on port 3000"));
   })
   .catch((err) => {
