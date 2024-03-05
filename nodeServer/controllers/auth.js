@@ -11,14 +11,37 @@ module.exports = class ControllerAuth {
   }
 
   static postLogin = async (req, res, next) => {
+    //Extract the user info from the request body
+    const email = req.body.email;
+    const password = req.body.password;
+
     try {
-      const user = await User.findById("65dd22d54b0433f0aa1d3404");
+      const user = await User.findOne({ email: email }); // this will find the user by email
+
+      //validate we found user
+      if (!user) {
+        console.log("User not found");
+        return res.redirect("/login");
+      }
+
+      //validate the password
+      const doMatch = await bcrypt.compare(password, user.password); // this will compare the password
+
+      //if the password is invalid, redirect to the login page
+      if (!doMatch) {
+        console.log("Password not valid");
+        return res.redirect("/login");
+      }
+
+      //set the session
       req.session.user = user;
       req.session.isLoggedIn = true;
-      await req.session.save((err) => {
-        console.log(err);
-        res.redirect("/");
-      }); // this will save the session to the database before we continue. use it in scenarios where we want to make sure session is saved before redirecting
+      await req.session.save(); // this will save the session to the database before we continue. use it in scenarios where we want to make sure session is saved before redirecting
+
+      //redirect to the home page
+      console.log("Logged in");
+      res.redirect("/");
+
     } catch (err) {
       console.log(err);
     }
@@ -37,61 +60,52 @@ module.exports = class ControllerAuth {
   };
 
   static postSignup = async (req, res, next) => {
-
     //retrieve the user info from the request body
     const email = req.body.email;
     const password = req.body.password;
     const confirmPassword = req.body.confirmPassword;
 
     //validate user input
-        //... code to validate user input
+    //... code to validate user input
 
-    
-    try{
-        //check if the user already exists
-        const userExists = await User.findOne({email: email});
+    try {
+      //check if the user already exists
+      const userExists = await User.findOne({ email: email });
 
+      //if the user exists, redirect to the signup page
+      if (userExists) {
+        return res.redirect("/signup");
+      }
 
-        //if the user exists, redirect to the signup page
-        if(userExists){
-            return res.redirect("/signup");
-        }
+      //create a new user
+      console.log("Creating a new user");
 
-        //create a new user
-        console.log("Creating a new user");
+      //hash the password
+      const hashedPassword = await bcrypt.hash(password, 12);
 
-        //hash the password
-        const hashedPassword = await bcrypt.hash(password, 12);
+      const user = new User({
+        name: "John",
+        email: email,
+        password: hashedPassword,
+        cart: { items: [] },
+      });
 
-        const user = new User({
-            name: "John",
-            email: email,
-            password: hashedPassword,
-            cart: {items: []}
-        });
+      //save the user to the database
+      const result = await user.save();
+      console.log(result);
 
-        //save the user to the database
-        const result = await user.save();
-        console.log(result);
-
-        //redirect to the login page
-        res.redirect("/login");
-
-    }catch(err){
+      //redirect to the login page
+      res.redirect("/login");
+    } catch (err) {
       console.log(err);
     }
-
-
-
-
-
   };
 
   static getSignup = (req, res, next) => {
-    res.render('auth/signup', {
-      path: '/signup',
-      pageTitle: 'Signup',
-      isAuthenticated: false
+    res.render("auth/signup", {
+      path: "/signup",
+      pageTitle: "Signup",
+      isAuthenticated: false,
     });
   };
 };
