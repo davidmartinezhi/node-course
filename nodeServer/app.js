@@ -7,6 +7,8 @@ const session = require("express-session"); // this is a package that allows us 
 
 //session object is passed to the function in order to store the session in the database
 const mongoDBStore = require("connect-mongodb-session")(session); // this is a package that allows us to store the session in the database
+const csrf = require("csurf"); //package to create cross site request forgery token so app only works on my views
+  //on any post request we require the token
 
 const env = require("dotenv").config();
 const uri = env.parsed.MONGODB;
@@ -23,6 +25,8 @@ const store = new mongoDBStore({
   //expires: 1000 * 60 * 60 * 24, // this will set the session to expire in 24 hours
 });
 
+const csrfProtection = csrf("secret"); //we can add object to configure it
+
 app.set("view engine", "ejs");
 app.set("views", "views"); // this allows us to set any value globally that express will manage for us
 
@@ -36,6 +40,7 @@ app.use(express.static(path.join(__dirname, "public"))); // this allows us to se
 
 //urlencoded is a function that returns a middleware function
 app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(cookieParser("cookie-parser-secret"));
 
 app.use(
   session({
@@ -46,6 +51,8 @@ app.use(
     //cookie: {maxAge: 1000 * 60 * 60 * 24} // this will set the cookie to expire in 24 hours
   })
 );
+// app.use(csurf("123456789iamasecret987654321look"));
+app.use(csrfProtection); // this will register the csfr protection middleware
 
 app.use(async (req, res, next) => {
 
