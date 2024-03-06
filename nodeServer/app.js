@@ -67,6 +67,13 @@ app.use(async (req, res, next) => {
   }
 });
 
+app.use((req, res, next) => {
+  //this allows for local variables that are casted into the views
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken(); //for every request that is executed, this 2 fields are set
+  next(); //we continue
+});
+
 //routes
 app.use("/admin", adminRoutes); // this will register the adminRoutes middleware
 app.use(shopRoutes); // this will register the shopRoutes middleware
