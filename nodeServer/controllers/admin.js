@@ -7,6 +7,13 @@ const Product = require("../models/product");
  * @param {Function} next - The next middleware function.
  */
 exports.getAddProduct = (req, res, next) => {
+
+  //check if user is not on a valid session
+  if(!req.session.isLoggedIn){
+    return res.redirect("/login");
+  }
+
+
   res.render("admin/edit-product", {
     pageTitle: "Add Product",
     path: "/admin/add-product",
