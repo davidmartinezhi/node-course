@@ -2,11 +2,22 @@ const User = require("../models/user"); // this will import the user model
 const bcrypt = require("bcryptjs"); // this will import the bcryptjs package
 
 module.exports = class ControllerAuth {
+  
+
   static getLogin = (req, res) => {
+
+    let message = req.flash("error"); // we receive error as array of strings
+
+    if(message.length > 0){ //we check if error message exists
+      message = message[0]; //if it does, we assign it to message
+    }else{
+      message = null; // else we use null, so it won't get displayed on the client
+    }
+
     res.render("auth/login", {
       path: "/login",
       pageTitle: "Login",
-      errorMessage: req.flash("error"),
+      errorMessage: message,
     });
   };
 
