@@ -41,6 +41,7 @@ module.exports = class ControllerAuth {
 
       //if the password is invalid, redirect to the login page
       if (!doMatch) {
+        await req.flash("error", "Invalid email or password");
         console.log("Password not valid");
         return res.redirect("/login");
       }
@@ -85,6 +86,7 @@ module.exports = class ControllerAuth {
 
       //if the user exists, redirect to the signup page
       if (userExists) {
+        await req.flash("error", "This email is already being used");
         return res.redirect("/signup");
       }
 
@@ -113,10 +115,20 @@ module.exports = class ControllerAuth {
   };
 
   static getSignup = (req, res, next) => {
+
+    let message = req.flash("error"); // we receive error as array of strings
+
+    if(message.length > 0){ //we check if error message exists
+      message = message[0]; //if it does, we assign it to message
+    }else{
+      message = null; // else we use null, so it won't get displayed on the client
+    }
+
     res.render("auth/signup", {
       path: "/signup",
       pageTitle: "Signup",
       isAuthenticated: false,
+      errorMessage: message
     });
   };
 };
