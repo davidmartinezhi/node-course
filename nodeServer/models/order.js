@@ -24,7 +24,7 @@ const orderSchema = new Schema({
     user: {
 
         //name of the user
-        name: {
+        email: {
             type: String,
             required: true
         },

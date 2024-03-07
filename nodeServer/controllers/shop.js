@@ -117,7 +117,7 @@ exports.postOrder = async (req, res, next) => {
 
     const order = new Order({
       user: {
-        name: req.user.name, // this will store the user name
+        email: req.user.email, // this will store the user name
         userId: req.user, // this will store the user id
       },
       products: products, // this will store the products in the cart
