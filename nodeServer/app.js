@@ -8,6 +8,7 @@ const session = require("express-session"); // this is a package that allows us 
 //session object is passed to the function in order to store the session in the database
 const mongoDBStore = require("connect-mongodb-session")(session); // this is a package that allows us to store the session in the database
 const csrf = require("csurf"); //package to create cross site request forgery token so app only works on my views
+const flash = require("connect-flash");
   //on any post request we require the token
 
 const env = require("dotenv").config();
@@ -53,6 +54,7 @@ app.use(
 );
 // app.use(csurf("123456789iamasecret987654321look"));
 app.use(csrfProtection); // this will register the csfr protection middleware
+app.use(flash()); // this will register the flash-connect middleware
 
 app.use(async (req, res, next) => {
 

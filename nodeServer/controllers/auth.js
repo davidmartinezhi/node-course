@@ -2,13 +2,13 @@ const User = require("../models/user"); // this will import the user model
 const bcrypt = require("bcryptjs"); // this will import the bcryptjs package
 
 module.exports = class ControllerAuth {
-  static getLogin(req, res) {
+  static getLogin = (req, res) => {
     res.render("auth/login", {
       path: "/login",
       pageTitle: "Login",
-      isAuthenticated: req.session.isLoggedIn,
+      errorMessage: req.flash("error"),
     });
-  }
+  };
 
   static postLogin = async (req, res, next) => {
     //Extract the user info from the request body
@@ -20,6 +20,7 @@ module.exports = class ControllerAuth {
 
       //validate we found user
       if (!user) {
+        await req.flash("error", "Invalid email or password");
         console.log("User not found");
         return res.redirect("/login");
       }
@@ -41,7 +42,6 @@ module.exports = class ControllerAuth {
       //redirect to the home page
       console.log("Logged in");
       res.redirect("/");
-
     } catch (err) {
       console.log(err);
     }
