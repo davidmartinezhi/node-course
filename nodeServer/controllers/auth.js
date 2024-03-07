@@ -1,4 +1,6 @@
 const User = require("../models/user"); // this will import the user model
+const nodemailer = require("nodemailer"); 
+const sendgridTransport = require("nodemailer-sendgrid-transport");
 const bcrypt = require("bcryptjs"); // this will import the bcryptjs package
 
 module.exports = class ControllerAuth {
