@@ -3,6 +3,23 @@ const nodemailer = require("nodemailer");
 const sendgridTransport = require("nodemailer-sendgrid-transport");
 const bcrypt = require("bcryptjs"); // this will import the bcryptjs package
 
+
+const env = require("dotenv").config();
+const USER = env.parsed.USER;
+const EMAIL = env.parsed.EMAIL;
+const PASSWORD = env.parsed.PASSWORD;
+
+
+//we execute sendgridTransport as a function because it returns a configuration that nodemailer can use to use sendgrid
+const transporter = nodemailer.createTransport({
+  host: "sandbox.smtp.mailtrap.io",
+  port: 2525,
+  auth: {
+      user: USER, // generated mailtrap user
+      pass: PASSWORD, // generated mailtrap password
+  }
+});
+
 module.exports = class ControllerAuth {
   
 
@@ -107,7 +124,15 @@ module.exports = class ControllerAuth {
 
       //save the user to the database
       const result = await user.save();
-      console.log(result);
+
+      // send mail
+      await transporter.sendMail({
+        to: email,
+        from: EMAIL,
+        subject: "Signup succeeded",
+        html: "<h1>You succeesfully signed up!</h1>"
+      })
+      console.log("email sent");
 
       //redirect to the login page
       res.redirect("/login");
