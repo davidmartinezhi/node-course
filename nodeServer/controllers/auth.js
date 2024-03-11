@@ -158,6 +158,24 @@ module.exports = class ControllerAuth {
       errorMessage: message
     });
   };
+
+  static getReset = (req, res, next) => {
+
+
+    let message = req.flash("error"); // we receive error as array of strings
+
+    if(message.length > 0){ //we check if error message exists
+      message = message[0]; //if it does, we assign it to message
+    }else{
+      message = null; // else we use null, so it won't get displayed on the client
+    }
+
+    res.render("auth/reset", {
+      path: "/reset",
+      pageTitle: "Reset Password",
+      errorMessage: message,
+    });
+  }
 };
 
 // exports.getLogin = async (req, res, next) => {
