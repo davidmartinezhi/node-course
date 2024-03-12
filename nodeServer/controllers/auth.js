@@ -1,35 +1,33 @@
 const User = require("../models/user"); // this will import the user model
-const nodemailer = require("nodemailer"); 
+const crypto = require("crypto"); // this will import the crypto package, it helps build secure random values
+const nodemailer = require("nodemailer");
 const sendgridTransport = require("nodemailer-sendgrid-transport");
 const bcrypt = require("bcryptjs"); // this will import the bcryptjs package
-
+const user = require("../models/user");
 
 const env = require("dotenv").config();
 const USER = env.parsed.USER;
 const EMAIL = env.parsed.EMAIL;
 const PASSWORD = env.parsed.PASSWORD;
 
-
 //we execute sendgridTransport as a function because it returns a configuration that nodemailer can use to use sendgrid
 const transporter = nodemailer.createTransport({
   host: "sandbox.smtp.mailtrap.io",
   port: 2525,
   auth: {
-      user: USER, // generated mailtrap user
-      pass: PASSWORD, // generated mailtrap password
-  }
+    user: USER, // generated mailtrap user
+    pass: PASSWORD, // generated mailtrap password
+  },
 });
 
 module.exports = class ControllerAuth {
-  
-
   static getLogin = (req, res) => {
-
     let message = req.flash("error"); // we receive error as array of strings
 
-    if(message.length > 0){ //we check if error message exists
+    if (message.length > 0) {
+      //we check if error message exists
       message = message[0]; //if it does, we assign it to message
-    }else{
+    } else {
       message = null; // else we use null, so it won't get displayed on the client
     }
 
@@ -130,8 +128,8 @@ module.exports = class ControllerAuth {
         to: email,
         from: EMAIL,
         subject: "Signup succeeded",
-        html: "<h1>You succeesfully signed up!</h1>"
-      })
+        html: "<h1>You succeesfully signed up!</h1>",
+      });
       console.log("email sent");
 
       //redirect to the login page
@@ -142,12 +140,12 @@ module.exports = class ControllerAuth {
   };
 
   static getSignup = (req, res, next) => {
-
     let message = req.flash("error"); // we receive error as array of strings
 
-    if(message.length > 0){ //we check if error message exists
+    if (message.length > 0) {
+      //we check if error message exists
       message = message[0]; //if it does, we assign it to message
-    }else{
+    } else {
       message = null; // else we use null, so it won't get displayed on the client
     }
 
@@ -155,18 +153,17 @@ module.exports = class ControllerAuth {
       path: "/signup",
       pageTitle: "Signup",
       isAuthenticated: false,
-      errorMessage: message
+      errorMessage: message,
     });
   };
 
   static getReset = (req, res, next) => {
-
-
     let message = req.flash("error"); // we receive error as array of strings
 
-    if(message.length > 0){ //we check if error message exists
+    if (message.length > 0) {
+      //we check if error message exists
       message = message[0]; //if it does, we assign it to message
-    }else{
+    } else {
       message = null; // else we use null, so it won't get displayed on the client
     }
 
@@ -175,7 +172,44 @@ module.exports = class ControllerAuth {
       pageTitle: "Reset Password",
       errorMessage: message,
     });
-  }
+  };
+
+  static postReset = async (req, res, next) => {
+    crypto.randomBytes(32, (err, buffer) => {
+      if (err) {
+        console.log(err);
+        return res.redirect("/reset");
+      }
+
+      const token = buffer.toString("hex"); // this will convert the buffer to a string, buffer contains hex values
+
+      User.findOne({ email: req.body.email })
+        .then((user) => {
+          if (!user) {
+            req.flash("error", "No account with that email found");
+            res.redirect("/reset");
+          }
+
+          user.resetToken = token;
+          user.resetTokenExpiration = Date.now() + 3600000; // this will set the expiration to 1 hour from now
+          return user.save();
+        }).then( (result) => {
+          // send mail
+          transporter.sendMail({
+            to: req.body.email,
+            from: "shop@node-course.com",
+            subject: "Password reset",
+            html: `
+              <p>You requested a password reset</p>
+              <p>Click this <a href="http://localhost:3000/reset/${token}">link</a> to set a new password</p>
+            `,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    });
+  };
 };
 
 // exports.getLogin = async (req, res, next) => {
