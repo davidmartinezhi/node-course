@@ -174,7 +174,7 @@ module.exports = class ControllerAuth {
     });
   };
 
-  static postReset = async (req, res, next) => {
+  static postReset = (req, res, next) => {
     crypto.randomBytes(32, (err, buffer) => {
       if (err) {
         console.log(err);
@@ -193,7 +193,10 @@ module.exports = class ControllerAuth {
           user.resetToken = token;
           user.resetTokenExpiration = Date.now() + 3600000; // this will set the expiration to 1 hour from now
           return user.save();
-        }).then( (result) => {
+        })
+        .then((result) => {
+          res.redirect("/"); // this will redirect to the home page
+
           // send mail
           transporter.sendMail({
             to: req.body.email,
@@ -209,6 +212,34 @@ module.exports = class ControllerAuth {
           console.log(err);
         });
     });
+  };
+
+  static getNewPassword = (req, res, next) => {
+      const token = req.params.token; // this will get the token from the url
+
+      // this will find the user by token and expiration date
+      User.findOne({
+        resetToken: token,
+        resetTokenExpiration: { $gt: Date.now() },
+      })
+      .then(user => {
+        let message = req.flash("error"); // we receive error as array of strings
+
+        if (message.length > 0) {
+          //we check if error message exists
+          message = message[0]; //if it does, we assign it to message
+        } else {
+          message = null; // else we use null, so it won't get displayed on the client
+        }
+
+        res.render("auth/new-password", {
+          // this will render the new-password page
+          path: "/new-password",
+          pageTitle: "New Password",
+          errorMessage: message,
+          userId: user._id.toString(),
+        });
+      })
   };
 };
 
