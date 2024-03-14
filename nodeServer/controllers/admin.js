@@ -122,7 +122,7 @@ exports.postDeleteProduct = async (req, res, next) => {
 
 exports.getProducts = (req, res, next) => {
   // Product.findAll()
-  Product.find() // this will get the products associated with the user
+  Product.find({userId: req.user._id}) // this will get the products associated with the user
   //.select("title price -_id") // this will select the title and price of the products and exclude the id
   //.populate("userId") //this will populate ids of references with the complete information, second argument is the fields we want to populate
     .then((products) => {
