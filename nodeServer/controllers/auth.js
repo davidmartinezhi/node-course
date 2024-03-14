@@ -4,6 +4,7 @@ const nodemailer = require("nodemailer");
 const sendgridTransport = require("nodemailer-sendgrid-transport");
 const bcrypt = require("bcryptjs"); // this will import the bcryptjs package
 const user = require("../models/user");
+const { validationResult } = require("express-validator"); //this gathers all errors from the validation middleware
 
 const env = require("dotenv").config();
 const USER = env.parsed.USER;
@@ -93,6 +94,18 @@ module.exports = class ControllerAuth {
     const email = req.body.email;
     const password = req.body.password;
     const confirmPassword = req.body.confirmPassword;
+
+    const errors = validationResult(req); // this will extract the validation errors
+
+    if(!errors.isEmpty()) {
+      console.log(errors.array());
+      return res.status(422).render("auth/signup", {
+        path: "/signup",
+        pageTitle: "Signup",
+        isAuthenticated: false,
+        errorMessage: errors.array()[0].msg,
+      });
+    }
 
     //validate user input
     //... code to validate user input

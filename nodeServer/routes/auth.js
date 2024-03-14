@@ -1,7 +1,8 @@
 const express = require('express');
-const router = express.Router();
-
 const authController = require('../controllers/auth');
+const {check} = require('express-validator');
+
+const router = express.Router();
 
 router.get('/login', authController.getLogin);
 
@@ -9,7 +10,11 @@ router.get('/signup', authController.getSignup);
 
 router.post('/login', authController.postLogin);
 
-router.post('/signup', authController.postSignup);
+// check() function is a middleware to validate the input fields
+// we can pass array of variables to check or just one variable
+// isEmail() is a method to check if the input is an email
+// middleware uses the variable and checks everywhere for it, query, headers, cookies, etc.
+router.post('/signup', check('email').isEmail(), authController.postSignup); 
 
 router.post('/logout', authController.postLogout);
 
