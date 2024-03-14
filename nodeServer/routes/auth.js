@@ -14,7 +14,7 @@ router.post('/login', authController.postLogin);
 // we can pass array of variables to check or just one variable
 // isEmail() is a method to check if the input is an email
 // middleware uses the variable and checks everywhere for it, query, headers, cookies, etc.
-router.post('/signup', check('email').isEmail(), authController.postSignup); 
+router.post('/signup', check('email').isEmail().withMessage('Please enter a valid email.'), authController.postSignup); 
 
 router.post('/logout', authController.postLogout);
 
