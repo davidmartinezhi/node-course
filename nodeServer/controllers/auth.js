@@ -216,6 +216,7 @@ module.exports = class ControllerAuth {
 
   static getNewPassword = (req, res, next) => {
       const token = req.params.token; // this will get the token from the url
+      console.log(token);
 
       // this will find the user by token and expiration date
       User.findOne({
@@ -231,15 +232,55 @@ module.exports = class ControllerAuth {
         } else {
           message = null; // else we use null, so it won't get displayed on the client
         }
-
+        console.log("token: " + token);
         res.render("auth/new-password", {
           // this will render the new-password page
           path: "/new-password",
           pageTitle: "New Password",
           errorMessage: message,
           userId: user._id.toString(),
+          passwordToken: token,
         });
       })
+  };
+
+  static postNewPassword = (req, res, next) => {
+    const newPassword = req.body.password; // this will get the new password
+    const userId = req.body.userId; // this will get the user id
+    const token = req.body.passwordToken; // this will get the token
+    console.log("00000000");
+    console.log(newPassword);
+    console.log(userId);
+    console.log(token);
+
+    let resetUser;
+    console.log(userId);
+
+    // this will find the user by id and token
+    User.findOne({
+      resetToken: token,
+      resetTokenExpiration: { $gt: Date.now() },
+      _id: userId,
+    })
+      .then((user) => {
+        console.log(user);
+        resetUser = user; // this will store the user in the resetUser variable
+        return bcrypt.hash(newPassword, 12); // this will hash the new password
+      })
+      .then((hashedPassword) => {
+        console.log(hashedPassword);
+        resetUser.password = hashedPassword; // this will set the new password
+        resetUser.resetToken = undefined; // this will set the reset token to undefined
+        resetUser.resetTokenExpiration = undefined; // this will set the reset token expiration to undefined
+        return resetUser.save(); // this will save the user
+      })
+      .then((result) => {
+        console.log("Password updated");
+        res.redirect("/login"); // this will redirect to the login page
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 };
 
