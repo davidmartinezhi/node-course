@@ -94,6 +94,13 @@ exports.postEditProduct = async (req, res, next) => {
   try {
     //fetch a product from the database
     const product = await Product.findById(prodId);
+
+    //check if the user is the owner of the product
+    if(product.userId.toString() !== req.user._id.toString()){
+      return res.redirect("/");
+    }
+
+    //update the product
     product.title = updatedTitle;
     product.imageUrl = updatedImageUrl;
     product.price = updatedPrice;
@@ -112,7 +119,7 @@ exports.postDeleteProduct = async (req, res, next) => {
   const prodId = req.body.productId; // this will extract the product id from the request body
 
   try {
-    await Product.findByIdAndDelete(prodId); // this will delete the product from the database
+    await Product.findOneAndDelete({_id:prodId, userId: req.user._id}); // this will delete the product from the database
     console.log("Destroyed Product"); // this will log a message to the console
     res.redirect("/admin/products"); // this will redirect to the products page
   } catch (err) {
