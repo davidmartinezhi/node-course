@@ -2,6 +2,7 @@ const express = require("express");
 const authController = require("../controllers/auth");
 const User = require("../models/user");
 const { check } = require("express-validator");
+const bcrypt = require("bcryptjs"); // this will import the bcryptjs package
 
 const router = express.Router();
 
@@ -9,7 +10,34 @@ router.get("/login", authController.getLogin);
 
 router.get("/signup", authController.getSignup);
 
-router.post("/login", authController.postLogin);
+router.post(
+  "/login",
+  [
+    check("email")
+      .isEmail()
+      .withMessage("Please enter a valid email.")
+      .custom((value, { req }) => {
+        return User.findOne({ email: value }).then((userDoc) => {
+          if (!userDoc) {
+            return Promise.reject("No account with this email found.");
+          }
+        });
+      }),
+    check("password")
+      .isLength({ min: 5 })
+      .withMessage("Password is invalid")
+      .custom((value, { req }) => {
+        return User.findOne({ email: req.body.email }).then((userDoc) => {
+          return bcrypt.compare(value, userDoc.password).then((doMatch) => {
+            if (!doMatch) {
+              return Promise.reject("Password incorrect. Please try again.");
+            }
+          });
+        });
+      }),
+  ],
+  authController.postLogin
+);
 
 // check() function is a middleware to validate the input fields
 // we can pass array of variables to check or just one variable

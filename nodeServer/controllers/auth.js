@@ -44,25 +44,40 @@ module.exports = class ControllerAuth {
     const email = req.body.email;
     const password = req.body.password;
 
+    const errors = validationResult(req); // this will extract the validation errors
+    console.log(errors.array());
+    
+    //validate the user input
+    if(!errors.isEmpty()) {
+      console.log(errors.array());
+      return res.status(422).render("auth/login", {
+        path: "/login",
+        pageTitle: "Login",
+        isAuthenticated: false,
+        errorMessage: errors.array()[0].msg,
+      });
+    }
+
+
     try {
-      const user = await User.findOne({ email: email }); // this will find the user by email
+      // const user = await User.findOne({ email: email }); // this will find the user by email
 
-      //validate we found user
-      if (!user) {
-        await req.flash("error", "Invalid email or password");
-        console.log("User not found");
-        return res.redirect("/login");
-      }
+      // //validate we found user
+      // if (!user) {
+      //   await req.flash("error", "Invalid email or password");
+      //   console.log("User not found");
+      //   return res.redirect("/login");
+      // }
 
-      //validate the password
-      const doMatch = await bcrypt.compare(password, user.password); // this will compare the password
+      // //validate the password
+      // const doMatch = await bcrypt.compare(password, user.password); // this will compare the password
 
-      //if the password is invalid, redirect to the login page
-      if (!doMatch) {
-        await req.flash("error", "Invalid email or password");
-        console.log("Password not valid");
-        return res.redirect("/login");
-      }
+      // //if the password is invalid, redirect to the login page
+      // if (!doMatch) {
+      //   await req.flash("error", "Invalid email or password");
+      //   console.log("Password not valid");
+      //   return res.redirect("/login");
+      // }
 
       //set the session
       req.session.user = user;
