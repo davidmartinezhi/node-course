@@ -93,7 +93,6 @@ module.exports = class ControllerAuth {
     //retrieve the user info from the request body
     const email = req.body.email;
     const password = req.body.password;
-    const confirmPassword = req.body.confirmPassword;
 
     const errors = validationResult(req); // this will extract the validation errors
 
@@ -111,14 +110,6 @@ module.exports = class ControllerAuth {
     //... code to validate user input
 
     try {
-      //check if the user already exists
-      const userExists = await User.findOne({ email: email });
-
-      //if the user exists, redirect to the signup page
-      if (userExists) {
-        await req.flash("error", "This email is already being used");
-        return res.redirect("/signup");
-      }
 
       //create a new user
       console.log("Creating a new user");
@@ -135,6 +126,7 @@ module.exports = class ControllerAuth {
 
       //save the user to the database
       const result = await user.save();
+      console.log("User created");
 
       // send mail
       await transporter.sendMail({

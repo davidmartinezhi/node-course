@@ -1,5 +1,6 @@
 const express = require("express");
 const authController = require("../controllers/auth");
+const User = require("../models/user");
 const { check } = require("express-validator");
 
 const router = express.Router();
@@ -17,7 +18,20 @@ router.post("/login", authController.postLogin);
 router.post(
   "/signup",
   [
-    check("email").isEmail().withMessage("Please enter a valid email."),
+    check("email")
+      .isEmail()
+      .withMessage("Please enter a valid email.")
+      .custom((value, { req }) => {
+        return User.findOne({ email: value }).then((userDoc) => {
+          //if promise is rejected, the promise will be rejected with the error message
+          // else it will be resolved with no value meaning it was successful
+          if (userDoc) {
+            return Promise.reject(
+              "E-Mail exists already, please pick a different one."
+            );
+          }
+        });
+      }), // custom() is a method to create a custom validation
     check(
       "password",
       "Please enter a password with only numbers and text and at least 5 characters."
@@ -25,10 +39,10 @@ router.post(
       .isLength({ min: 5 })
       .isAlphanumeric(),
     check("confirmPassword").custom((value, { req }) => {
-        if (value !== req.body.password) {
-            throw new Error("Passwords have to match!");
-        }
-        return true;
+      if (value !== req.body.password) {
+        throw new Error("Passwords have to match!");
+      }
+      return true;
     }), // custom() is a method to create a custom validation
   ],
   authController.postSignup
