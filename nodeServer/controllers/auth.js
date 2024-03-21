@@ -41,14 +41,14 @@ module.exports = class ControllerAuth {
 
   static postLogin = async (req, res, next) => {
     //Extract the user info from the request body
-    const email = req.body.email;
-    const password = req.body.password;
+    // const email = req.body.email;
+    // const password = req.body.password;
 
     const errors = validationResult(req); // this will extract the validation errors
     console.log(errors.array());
-    
+
     //validate the user input
-    if(!errors.isEmpty()) {
+    if (!errors.isEmpty()) {
       console.log(errors.array());
       return res.status(422).render("auth/login", {
         path: "/login",
@@ -57,7 +57,6 @@ module.exports = class ControllerAuth {
         errorMessage: errors.array()[0].msg,
       });
     }
-
 
     try {
       // const user = await User.findOne({ email: email }); // this will find the user by email
@@ -111,13 +110,18 @@ module.exports = class ControllerAuth {
 
     const errors = validationResult(req); // this will extract the validation errors
 
-    if(!errors.isEmpty()) {
+    if (!errors.isEmpty()) {
       console.log(errors.array());
       return res.status(422).render("auth/signup", {
         path: "/signup",
         pageTitle: "Signup",
         isAuthenticated: false,
         errorMessage: errors.array()[0].msg,
+        oldInput: {
+          email: email,
+          password: password,
+          confirmPassword: req.body.confirmPassword,
+        },
       });
     }
 
@@ -125,7 +129,6 @@ module.exports = class ControllerAuth {
     //... code to validate user input
 
     try {
-
       //create a new user
       console.log("Creating a new user");
 
@@ -174,6 +177,11 @@ module.exports = class ControllerAuth {
       pageTitle: "Signup",
       isAuthenticated: false,
       errorMessage: message,
+      oldInput: {
+        email: "",
+        password: "",
+        confirmPassword: "",
+      },
     });
   };
 
@@ -235,33 +243,32 @@ module.exports = class ControllerAuth {
   };
 
   static getNewPassword = (req, res, next) => {
-      const token = req.params.token; // this will get the token from the url
-      console.log(token);
+    const token = req.params.token; // this will get the token from the url
+    console.log(token);
 
-      // this will find the user by token and expiration date
-      User.findOne({
-        resetToken: token,
-        resetTokenExpiration: { $gt: Date.now() },
-      })
-      .then(user => {
-        let message = req.flash("error"); // we receive error as array of strings
+    // this will find the user by token and expiration date
+    User.findOne({
+      resetToken: token,
+      resetTokenExpiration: { $gt: Date.now() },
+    }).then((user) => {
+      let message = req.flash("error"); // we receive error as array of strings
 
-        if (message.length > 0) {
-          //we check if error message exists
-          message = message[0]; //if it does, we assign it to message
-        } else {
-          message = null; // else we use null, so it won't get displayed on the client
-        }
-        console.log("token: " + token);
-        res.render("auth/new-password", {
-          // this will render the new-password page
-          path: "/new-password",
-          pageTitle: "New Password",
-          errorMessage: message,
-          userId: user._id.toString(),
-          passwordToken: token,
-        });
-      })
+      if (message.length > 0) {
+        //we check if error message exists
+        message = message[0]; //if it does, we assign it to message
+      } else {
+        message = null; // else we use null, so it won't get displayed on the client
+      }
+      console.log("token: " + token);
+      res.render("auth/new-password", {
+        // this will render the new-password page
+        path: "/new-password",
+        pageTitle: "New Password",
+        errorMessage: message,
+        userId: user._id.toString(),
+        passwordToken: token,
+      });
+    });
   };
 
   static postNewPassword = (req, res, next) => {
