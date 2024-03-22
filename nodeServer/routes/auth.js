@@ -16,6 +16,7 @@ router.post(
     check("email")
       .isEmail()
       .withMessage("Please enter a valid email.")
+      .normalizeEmail()
       .custom((value, { req }) => {
         return User.findOne({ email: value }).then((userDoc) => {
           if (!userDoc) {
@@ -25,6 +26,8 @@ router.post(
       }),
     check("password")
       .isLength({ min: 5 })
+      .isAlphanumeric()
+      .trim()
       .withMessage("Password is invalid")
       .custom((value, { req }) => {
         return User.findOne({ email: req.body.email }).then((userDoc) => {
