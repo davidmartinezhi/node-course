@@ -122,6 +122,7 @@ module.exports = class ControllerAuth {
           password: password,
           confirmPassword: req.body.confirmPassword,
         },
+        validationsErrors: errors.array(),
       });
     }
 
@@ -182,6 +183,7 @@ module.exports = class ControllerAuth {
         password: "",
         confirmPassword: "",
       },
+      validationsErrors: [],
     });
   };
 
