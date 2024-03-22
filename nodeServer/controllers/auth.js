@@ -36,6 +36,10 @@ module.exports = class ControllerAuth {
       path: "/login",
       pageTitle: "Login",
       errorMessage: message,
+      oldInput: {
+        email: "",
+      },
+      validationsErrors: [],
     });
   };
 
@@ -55,6 +59,10 @@ module.exports = class ControllerAuth {
         pageTitle: "Login",
         isAuthenticated: false,
         errorMessage: errors.array()[0].msg,
+        validationsErrors: errors.array(),
+        oldInput: {
+          email: req.body.email,
+        },
       });
     }
 
