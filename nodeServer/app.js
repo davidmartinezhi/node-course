@@ -35,6 +35,7 @@ app.set("views", "views"); // this allows us to set any value globally that expr
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
+const { error } = require("console");
 
 // serving static files
 app.use(express.static(path.join(__dirname, "public"))); // this allows us to serve static files like css files
@@ -93,6 +94,13 @@ app.use(shopRoutes); // this will register the shopRoutes middleware
 app.use(authRoutes); // this will register the authRoutes middleware
 app.get("/500", errorController.get500); // this will register the errorController middleware
 app.use("/", errorController.get404); // this will register the errorController middleware
+
+//this is a centralized error handling middleware
+app.use((error, req, res, next) => {
+  //error handling middlewares are always read from top to bottom, when we declare various
+  res.redirect("/500"); //this is for redirecting to the error page as fallback
+  // res.status(error.httpStatusCode).render(...);
+});
 
 mongoose
   .connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })

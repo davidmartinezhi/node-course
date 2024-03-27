@@ -1,6 +1,5 @@
 const Product = require("../models/product");
 const { validationResult } = require("express-validator");
-const mongoose = require("mongoose");
 /**
  * Renders the add product page.
  * @param {Object} req - The request object.
@@ -63,7 +62,6 @@ exports.postAddProduct = async (req, res, next) => {
   try {
     //in mongoose we pass a javasccript object where we map
     const product = new Product({
-      _id: new mongoose.Types.ObjectId("65fe6cde3ccdfd3343991a4a"), // this will create a new object id
       title: title,
       price: price,
       description: description,
@@ -99,7 +97,13 @@ exports.postAddProduct = async (req, res, next) => {
     // });
 
     //we can also redirect to an error page
-    res.redirect("/500");
+    // res.redirect("/500");
+
+    const error = new Error("Creating a product failed");
+    error.httpStatusCode = 500;
+
+    // this will skip all the other middlewares ang go to the error handling middleware
+    return next(error); 
   }
 };
 
@@ -129,7 +133,13 @@ exports.getEditProduct = (req, res, next) => {
         validationsErrors: [],
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+  
+      // this will skip all the other middlewares ang go to the error handling middleware
+      return next(error); 
+    });
 };
 
 exports.postEditProduct = async (req, res, next) => {
@@ -182,7 +192,11 @@ exports.postEditProduct = async (req, res, next) => {
     console.log("Updated Product");
     res.redirect("/admin/products");
   } catch (err) {
-    console.log(err);
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+
+    // this will skip all the other middlewares ang go to the error handling middleware
+    return next(error); 
   }
 };
 
