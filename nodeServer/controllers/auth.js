@@ -3,7 +3,6 @@ const crypto = require("crypto"); // this will import the crypto package, it hel
 const nodemailer = require("nodemailer");
 const sendgridTransport = require("nodemailer-sendgrid-transport");
 const bcrypt = require("bcryptjs"); // this will import the bcryptjs package
-const user = require("../models/user");
 const { validationResult } = require("express-validator"); //this gathers all errors from the validation middleware
 
 const env = require("dotenv").config();
@@ -45,7 +44,7 @@ module.exports = class ControllerAuth {
 
   static postLogin = async (req, res, next) => {
     //Extract the user info from the request body
-    // const email = req.body.email;
+    const email = req.body.email;
     // const password = req.body.password;
 
     const errors = validationResult(req); // this will extract the validation errors
@@ -67,7 +66,7 @@ module.exports = class ControllerAuth {
     }
 
     try {
-      // const user = await User.findOne({ email: email }); // this will find the user by email
+      const user = await User.findOne({ email: email }); // this will find the user by email
 
       // //validate we found user
       // if (!user) {
@@ -87,6 +86,7 @@ module.exports = class ControllerAuth {
       // }
 
       //set the session
+
       req.session.user = user;
       req.session.isLoggedIn = true;
       await req.session.save(); // this will save the session to the database before we continue. use it in scenarios where we want to make sure session is saved before redirecting

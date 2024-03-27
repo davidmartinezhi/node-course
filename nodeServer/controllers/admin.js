@@ -1,4 +1,5 @@
 const Product = require("../models/product");
+const mongodb = require("mongodb");
 
 /**
  * Renders the add product page.
@@ -38,12 +39,15 @@ exports.postAddProduct = async (req, res, next) => {
     //in mongoose we pass a javasccript object where we map
     const product = new Product({
       title: title,
-      imageUrl: imageUrl,
-      description: description,
       price: price,
+      description: description,
+      imageUrl: imageUrl,
+    
       //mongoose will automatically extract the id from the user object
       userId: req.user, // this will create a new product associated with the user
     }); // this will create a new product
+
+    console.log("PRODUCT: ",product); // this will log the product to the console
 
     //mongoose has a save method also
     await product.save(); // this will save the product to the database
