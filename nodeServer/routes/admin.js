@@ -20,10 +20,10 @@ router.get("/products", isAuth, adminController.getProducts);
 router.post(
   "/add-product",
   [
-    check("title").isString().isLength({ min: 3 }).trim(),
-    check("imageUrl").isURL(),
-    check("price").isNumeric(),
-    check("description").isLength({ min: 5, max: 400 }),
+    check("title").isString().isLength({ min: 3 }).trim().withMessage("Please enter a valid title, it should have at least 3 characters."),
+    check("imageUrl").isURL().withMessage("Please enter a valid URL."),
+    check("price").isNumeric().withMessage("Please enter a valid price. It must be numeric"),
+    check("description").isLength({ min: 5, max: 400 }).withMessage("Please enter a valid description. It must be between 5 and 400 characters."),
   ],
   isAuth,
   adminController.postAddProduct
@@ -36,10 +36,10 @@ router.get("/edit-product/:productId", isAuth, adminController.getEditProduct);
 router.post(
   "/edit-product",
   [
-    check("title").isString().isLength({ min: 3 }).trim(),
-    check("imageUrl").isURL(),
-    check("price").isNumeric(),
-    check("description").isLength({ min: 5, max: 400 }),
+    check("title").isString().isLength({ min: 3 }).trim().withMessage("Please enter a valid title, it should have at least 3 characters."),
+    check("imageUrl").isURL().withMessage("Please enter a valid URL."),
+    check("price").isNumeric().withMessage("Please enter a valid price. It must be numeric"),
+    check("description").isLength({ min: 5, max: 400 }).withMessage("Please enter a valid description. It must be between 5 and 400 characters."),
   ],
   isAuth,
   adminController.postEditProduct
