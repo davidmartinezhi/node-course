@@ -17,7 +17,6 @@ exports.getAddProduct = (req, res, next) => {
     pageTitle: "Add Product",
     path: "/admin/add-product",
     editing: false,
-    isAuthenticated: req.session.isLoggedIn,
     errorMessage: null,
     hasError: false,
     product: {
@@ -26,6 +25,7 @@ exports.getAddProduct = (req, res, next) => {
       price: "",
       description: "",
     },
+    validationsErrors: [],
   });
 };
 
@@ -39,7 +39,7 @@ exports.postAddProduct = async (req, res, next) => {
   const title = req.body.title.trim();
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
-  const description = req.body.description;
+  const description = req.body.description.trim();
 
   //check if we have any validation errors
   const errors = validationResult(req);
@@ -48,7 +48,6 @@ exports.postAddProduct = async (req, res, next) => {
       pageTitle: "Add Product",
       path: "/admin/add-product",
       editing: false,
-      isAuthenticated: req.session.isLoggedIn,
       errorMessage: errors.array()[0].msg,
       hasError: true,
       product: {
@@ -57,6 +56,7 @@ exports.postAddProduct = async (req, res, next) => {
         price: price,
         description: description,
       },
+      validationsErrors: errors.array(),
     });
   }
 
@@ -102,9 +102,9 @@ exports.getEditProduct = (req, res, next) => {
         path: "/admin/edit-product",
         editing: editMode,
         product: product,
-        isAuthenticated: req.session.isLoggedIn,
         hasError: false,
         errorMessage: null,
+        validationsErrors: [],
       });
     })
     .catch((err) => console.log(err));
@@ -118,7 +118,7 @@ exports.postEditProduct = async (req, res, next) => {
   const updatedTitle = req.body.title.trim();
   const updatedImageUrl = req.body.imageUrl;
   const updatedPrice = req.body.price;
-  const updatedDescription = req.body.description;
+  const updatedDescription = req.body.description.trim();
 
   //check if we have any validation errors
   const errors = validationResult(req);
@@ -128,9 +128,9 @@ exports.postEditProduct = async (req, res, next) => {
       pageTitle: "Edit Product",
       path: "/admin/edit-product",
       editing: true,
-      isAuthenticated: req.session.isLoggedIn,
       errorMessage: errors.array()[0].msg,
       hasError: true,
+      validationsErrors: errors.array(),
       product: {
         title: updatedTitle,
         imageUrl: updatedImageUrl,
