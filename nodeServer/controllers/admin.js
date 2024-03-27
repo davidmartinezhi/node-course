@@ -47,7 +47,6 @@ exports.postAddProduct = async (req, res, next) => {
       userId: req.user, // this will create a new product associated with the user
     }); // this will create a new product
 
-    console.log("PRODUCT: ",product); // this will log the product to the console
 
     //mongoose has a save method also
     await product.save(); // this will save the product to the database

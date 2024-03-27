@@ -62,9 +62,7 @@ app.use(async (req, res, next) => {
 
   try {
     const user = await User.findById(req.session.user._id);
-    req.user = user; // this will store the user in the request object
-    console.log("USER: "+req.user);
-    console.log("USER session: "+req.session.user._id);
+    req.user = user; // this will store the user in the request object;
     next();
   } catch (err) {
     console.log(err);
