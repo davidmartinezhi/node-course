@@ -1,6 +1,6 @@
 const Product = require("../models/product");
 const { validationResult } = require("express-validator");
-
+const mongoose = require("mongoose");
 /**
  * Renders the add product page.
  * @param {Object} req - The request object.
@@ -63,6 +63,7 @@ exports.postAddProduct = async (req, res, next) => {
   try {
     //in mongoose we pass a javasccript object where we map
     const product = new Product({
+      _id: new mongoose.Types.ObjectId("65fe6cde3ccdfd3343991a4a"), // this will create a new object id
       title: title,
       price: price,
       description: description,
@@ -77,7 +78,28 @@ exports.postAddProduct = async (req, res, next) => {
     console.log("Created Product");
     res.redirect("/admin/products");
   } catch (err) {
-    console.log(err);
+    console.log("Error in postAddProduct");
+    //we can  throw an error
+    // throw new Error(err);
+
+    //we can also render the page with an error message
+    // return res.status(500).render("admin/edit-product", {
+    //   pageTitle: "Add Product",
+    //   path: "/admin/add-product",
+    //   editing: false,
+    //   errorMessage: "Database operation failed, please try again.",
+    //   hasError: true,
+    //   product: {
+    //     title: title,
+    //     imageUrl: imageUrl,
+    //     price: price,
+    //     description: description,
+    //   },
+    //   validationsErrors: [],
+    // });
+
+    //we can also redirect to an error page
+    res.redirect("/500");
   }
 };
 

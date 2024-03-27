@@ -9,7 +9,7 @@ const session = require("express-session"); // this is a package that allows us 
 const mongoDBStore = require("connect-mongodb-session")(session); // this is a package that allows us to store the session in the database
 const csrf = require("csurf"); //package to create cross site request forgery token so app only works on my views
 const flash = require("connect-flash");
-  //on any post request we require the token
+//on any post request we require the token
 
 const env = require("dotenv").config();
 const uri = env.parsed.MONGODB;
@@ -58,17 +58,27 @@ app.use(flash()); // this will register the flash-connect middleware
 
 app.use(async (req, res, next) => {
 
-  if(!req.session.user) {return next()};
+  //validate if user is not logged in
+  if (!req.session.user) {
+    return next(); // we continue
+  }
 
   try {
+    //if user is logged in, we fetch the user from the database
     const user = await User.findById(req.session.user._id);
+
+    //validate if user does not exist in database
+    if (!user) {
+      return next(); // we continue
+    }
+
     req.user = user; // this will store the user in the request object;
-    next();
+    next(); // we continue
   } catch (err) {
-    console.log(err);
+    //this error could be a database error
+    throw new Error(err);
   }
 });
-
 
 app.use((req, res, next) => {
   //this allows for local variables that are casted into the views
@@ -81,6 +91,7 @@ app.use((req, res, next) => {
 app.use("/admin", adminRoutes); // this will register the adminRoutes middleware
 app.use(shopRoutes); // this will register the shopRoutes middleware
 app.use(authRoutes); // this will register the authRoutes middleware
+app.get("/500", errorController.get500); // this will register the errorController middleware
 app.use("/", errorController.get404); // this will register the errorController middleware
 
 mongoose
