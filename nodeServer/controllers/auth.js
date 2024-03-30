@@ -95,7 +95,11 @@ module.exports = class ControllerAuth {
       console.log("Logged in");
       res.redirect("/");
     } catch (err) {
-      console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+  
+      // this will skip all the other middlewares ang go to the error handling middleware
+      return next(error); 
     }
   };
 
@@ -107,7 +111,11 @@ module.exports = class ControllerAuth {
         res.redirect("/");
       });
     } catch (err) {
-      console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+  
+      // this will skip all the other middlewares ang go to the error handling middleware
+      return next(error); 
     }
   };
 
@@ -167,7 +175,11 @@ module.exports = class ControllerAuth {
       //redirect to the login page
       res.redirect("/login");
     } catch (err) {
-      console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+  
+      // this will skip all the other middlewares ang go to the error handling middleware
+      return next(error); 
     }
   };
 
@@ -247,7 +259,11 @@ module.exports = class ControllerAuth {
           });
         })
         .catch((err) => {
-          console.log(err);
+          const error = new Error(err);
+          error.httpStatusCode = 500;
+      
+          // this will skip all the other middlewares ang go to the error handling middleware
+          return next(error); 
         });
     });
   };
@@ -316,7 +332,11 @@ module.exports = class ControllerAuth {
         res.redirect("/login"); // this will redirect to the login page
       })
       .catch((err) => {
-        console.log(err);
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+    
+        // this will skip all the other middlewares ang go to the error handling middleware
+        return next(error); 
       });
   };
 };

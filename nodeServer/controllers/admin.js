@@ -208,7 +208,11 @@ exports.postDeleteProduct = async (req, res, next) => {
     console.log("Destroyed Product"); // this will log a message to the console
     res.redirect("/admin/products"); // this will redirect to the products page
   } catch (err) {
-    console.log(err); // this will log an error to the console
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+
+    // this will skip all the other middlewares ang go to the error handling middleware
+    return next(error);
   }
 };
 
@@ -226,5 +230,11 @@ exports.getProducts = (req, res, next) => {
         isAuthenticated: req.session.isLoggedIn,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+  
+      // this will skip all the other middlewares ang go to the error handling middleware
+      return next(error); 
+    });
 };

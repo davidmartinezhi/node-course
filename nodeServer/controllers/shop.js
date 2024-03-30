@@ -19,7 +19,13 @@ exports.getProducts = (req, res, next) => {
 
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+  
+      // this will skip all the other middlewares ang go to the error handling middleware
+      return next(error); 
+    });
 };
 
 /**
@@ -38,7 +44,13 @@ exports.getIndex = (req, res, next) => {
         path: "/",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+  
+      // this will skip all the other middlewares ang go to the error handling middleware
+      return next(error); 
+    });
 
   // this will fetch all the products with just sql
   // Product.fetchAll()
@@ -72,7 +84,11 @@ exports.getCart = async (req, res, next) => {
 
     });
   } catch (err) {
-    console.log(err);
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+
+    // this will skip all the other middlewares ang go to the error handling middleware
+    return next(error); 
   }
 };
 
@@ -84,8 +100,12 @@ exports.postCart = async (req, res, next) => {
     const result = await req.user.addToCart(product); // this will add the product to the cart
     console.log(result);
     res.redirect("/cart");
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+
+    // this will skip all the other middlewares ang go to the error handling middleware
+    return next(error); 
   }
 };
 
@@ -97,7 +117,13 @@ exports.postCartDeleteProduct = (req, res, next) => {
       console.log(result);
       res.redirect("/cart");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+  
+      // this will skip all the other middlewares ang go to the error handling middleware
+      return next(error); 
+    });
   // Product.findById(prodId, (product) => {
   //   Cart.deleteProduct(prodId, +product.price); // this will delete the product from the cart
   //   res.redirect("/cart");
@@ -129,7 +155,11 @@ exports.postOrder = async (req, res, next) => {
 
     res.redirect("/orders"); // this will redirect to the orders page
   } catch (err) {
-    console.log(err);
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+
+    // this will skip all the other middlewares ang go to the error handling middleware
+    return next(error); 
   }
 };
 
@@ -151,7 +181,11 @@ exports.getOrders = async (req, res, next) => {
       isAuthenticated: req.session.isLoggedIn,
     });
   } catch (err) {
-    console.log(err);
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+
+    // this will skip all the other middlewares ang go to the error handling middleware
+    return next(error); 
   }
 };
 
@@ -181,5 +215,11 @@ exports.getProduct = (req, res, next) => {
         isAuthenticated: req.session.isLoggedIn,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+  
+      // this will skip all the other middlewares ang go to the error handling middleware
+      return next(error); 
+    });
 };
