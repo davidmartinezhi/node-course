@@ -57,6 +57,13 @@ app.use(
 app.use(csrfProtection); // this will register the csfr protection middleware
 app.use(flash()); // this will register the flash-connect middleware
 
+app.use((req, res, next) => {
+  //this allows for local variables that are casted into the views
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken(); //for every request that is executed, this 2 fields are set
+  next(); //we continue
+});
+
 app.use(async (req, res, next) => {
 
   //validate if user is not logged in
@@ -65,6 +72,7 @@ app.use(async (req, res, next) => {
   }
 
   try {
+
     //if user is logged in, we fetch the user from the database
     const user = await User.findById(req.session.user._id);
 
@@ -77,16 +85,10 @@ app.use(async (req, res, next) => {
     next(); // we continue
   } catch (err) {
     //this error could be a database error
-    throw new Error(err);
+    next(new Error(err)); // this will skip all the other middlewares ang go to the error handling middleware
   }
 });
 
-app.use((req, res, next) => {
-  //this allows for local variables that are casted into the views
-  res.locals.isAuthenticated = req.session.isLoggedIn;
-  res.locals.csrfToken = req.csrfToken(); //for every request that is executed, this 2 fields are set
-  next(); //we continue
-});
 
 //routes
 app.use("/admin", adminRoutes); // this will register the adminRoutes middleware
@@ -98,8 +100,14 @@ app.use("/", errorController.get404); // this will register the errorController 
 //this is a centralized error handling middleware
 app.use((error, req, res, next) => {
   //error handling middlewares are always read from top to bottom, when we declare various
-  res.redirect("/500"); //this is for redirecting to the error page as fallback
+  // res.redirect("/500"); //this is for redirecting to the error page as fallback
   // res.status(error.httpStatusCode).render(...);
+  res.status(500)
+  .render("500", {
+    pageTitle: "An Error Ocurred!",
+    path: "/500",
+    isAuthenticated: req.session.isLoggedIn,
+  });
 });
 
 mongoose
