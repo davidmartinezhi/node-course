@@ -36,11 +36,28 @@ exports.getAddProduct = (req, res, next) => {
  */
 exports.postAddProduct = async (req, res, next) => {
   const title = req.body.title.trim();
-  const imageUrl = req.file;
+  const image = req.file;
   const price = req.body.price;
   const description = req.body.description.trim();
 
-  console.log(imageUrl);
+  
+  //check if we have an image
+  if (!image) {
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Add Product",
+      path: "/admin/add-product",
+      editing: false,
+      errorMessage: "Attached file is not an image. It must be PNG,JPG or JPEG",
+      hasError: true,
+      product: {
+        title: title,
+        price: price,
+        description: description,
+      },
+      validationsErrors: [],
+    });
+  }
+
 
   //check if we have any validation errors
   const errors = validationResult(req);
@@ -60,6 +77,8 @@ exports.postAddProduct = async (req, res, next) => {
       validationsErrors: errors.array(),
     });
   }
+
+  const imageUrl = image.path;
 
   try {
     //in mongoose we pass a javasccript object where we map
@@ -150,7 +169,7 @@ exports.postEditProduct = async (req, res, next) => {
 
   //Extract the updated info from the product
   const updatedTitle = req.body.title.trim();
-  const updatedImageUrl = req.body.imageUrl;
+  const image = req.file;
   const updatedPrice = req.body.price;
   const updatedDescription = req.body.description.trim();
 
@@ -167,7 +186,6 @@ exports.postEditProduct = async (req, res, next) => {
       validationsErrors: errors.array(),
       product: {
         title: updatedTitle,
-        imageUrl: updatedImageUrl,
         price: updatedPrice,
         description: updatedDescription,
         _id: prodId,
@@ -186,9 +204,13 @@ exports.postEditProduct = async (req, res, next) => {
 
     //update the product
     product.title = updatedTitle;
-    product.imageUrl = updatedImageUrl;
     product.price = updatedPrice;
     product.description = updatedDescription;
+
+    //check if we have an image
+    if (image) {
+      product.imageUrl = image.path;
+    }
 
     await product.save(); // this will save the updated product to the database
     console.log("Updated Product");
