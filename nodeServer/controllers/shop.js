@@ -1,3 +1,5 @@
+const fs = require("fs");
+const path = require("path");
 const Product = require("../models/product");
 const Order = require("../models/order");
 
@@ -222,4 +224,22 @@ exports.getProduct = (req, res, next) => {
       // this will skip all the other middlewares ang go to the error handling middleware
       return next(error); 
     });
+};
+
+exports.getInvoice = (req, res, next) => {
+  const orderId = req.params.orderId; // this will get the order id from the request parameters
+
+  const invoiceName = "invoice-" + orderId + ".pdf"; // this will store the invoice name
+  const invoicePath = path.join("data", "invoices", invoiceName); // this will store the invoice path
+
+  fs.readFile(invoicePath, (err, data) => {
+    if (err) {
+      return next(err); // this will skip all the other middlewares ang go to the error handling middleware
+    }
+
+    //if we dont have and error, we send the file
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", 'inline; filename="' + invoiceName + '"');
+    res.send(data);
+  });
 };
