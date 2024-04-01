@@ -237,9 +237,26 @@ exports.getInvoice = (req, res, next) => {
       return next(err); // this will skip all the other middlewares ang go to the error handling middleware
     }
 
+    //we validate if the order exists and if the user is the owner of the order
+    Order.findById({_id: orderId}).then(order => {
+
+      //validate if we have an order
+      if(!order){
+        return next(new Error('No order found'))
+      }
+
+      //validate if the user is the owner of the order
+      if(order.user.userId.toString() !== req.user._id.toString()){
+        return next(new Error('Unauthorized'))
+      }
+    }).catch(err => {
+      return next(err)
+    });
+
     //if we dont have and error, we send the file
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", 'inline; filename="' + invoiceName + '"');
+    res.setHeader("Content-Disposition", 'inline; filename="' + invoiceName + '"'); // this will open the pdf in the browser
+    // res.setHeader("Content-Disposition", 'attachment; filename="' + invoiceName + '"'); // this will force the download
     res.send(data);
   });
 };
