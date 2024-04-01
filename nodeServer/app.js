@@ -26,6 +26,8 @@ const store = new mongoDBStore({
 });
 
 const csrfProtection = csrf("secret"); //we can add object to configure it
+
+//consiguration for multer
 const fileStorage = multer.diskStorage({
   //with this we can configure where the file will be stored and the file name
   destination: (req, file, cb) => {
@@ -35,6 +37,20 @@ const fileStorage = multer.diskStorage({
     cb(null, new Date().toISOString() + "-" + file.originalname); // this will set the name of the file
   },
 });
+
+const fileFilter = (req, file, cb) => {
+  //this will filter the files that we want to accept
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true); // this will accept the file
+  } else {
+    cb(null, false); // this will reject the file
+  }
+};
+
 
 app.set("view engine", "ejs");
 app.set("views", "views"); // this allows us to set any value globally that express will manage for us
@@ -49,7 +65,7 @@ app.use(express.static(path.join(__dirname, "public"))); // this allows us to se
 
 //urlencoded is a function that returns a middleware function
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(multer({storage: fileStorage}).single("image")); // this will parse the body of the request and store the image in the images folder
+app.use(multer({storage: fileStorage, fileFilter: fileFilter}).single("image")); // this will parse the body of the request and store the image in the images folder
 // app.use(cookieParser("cookie-parser-secret"));
 
 app.use(
