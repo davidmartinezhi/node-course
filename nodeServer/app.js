@@ -9,8 +9,7 @@ const session = require("express-session"); // this is a package that allows us 
 const mongoDBStore = require("connect-mongodb-session")(session); // this is a package that allows us to store the session in the database
 const csrf = require("csurf"); //package to create cross site request forgery token so app only works on my views
 const flash = require("connect-flash");
-//on any post request we require the token
-
+const multer = require("multer"); // this is a package that allows us to parse the body of the request
 const env = require("dotenv").config();
 const uri = env.parsed.MONGODB;
 
@@ -27,6 +26,15 @@ const store = new mongoDBStore({
 });
 
 const csrfProtection = csrf("secret"); //we can add object to configure it
+const fileStorage = multer.diskStorage({
+  //with this we can configure where the file will be stored and the file name
+  destination: (req, file, cb) => {
+    cb(null, "images"); // this will set the destination of the file, null is the error message (it tells multer that everything is ok)
+  }, // this will set the destination of the file
+  filename: (req, file, cb) => {
+    cb(null, new Date().toISOString() + "-" + file.originalname); // this will set the name of the file
+  },
+});
 
 app.set("view engine", "ejs");
 app.set("views", "views"); // this allows us to set any value globally that express will manage for us
@@ -35,13 +43,13 @@ app.set("views", "views"); // this allows us to set any value globally that expr
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
-const { error } = require("console");
 
 // serving static files
 app.use(express.static(path.join(__dirname, "public"))); // this allows us to serve static files like css files
 
 //urlencoded is a function that returns a middleware function
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer({storage: fileStorage}).single("image")); // this will parse the body of the request and store the image in the images folder
 // app.use(cookieParser("cookie-parser-secret"));
 
 app.use(

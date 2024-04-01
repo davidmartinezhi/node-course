@@ -36,9 +36,11 @@ exports.getAddProduct = (req, res, next) => {
  */
 exports.postAddProduct = async (req, res, next) => {
   const title = req.body.title.trim();
-  const imageUrl = req.body.imageUrl;
+  const imageUrl = req.file;
   const price = req.body.price;
   const description = req.body.description.trim();
+
+  console.log(imageUrl);
 
   //check if we have any validation errors
   const errors = validationResult(req);
