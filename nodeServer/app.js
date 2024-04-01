@@ -62,6 +62,7 @@ const authRoutes = require("./routes/auth");
 
 // serving static files
 app.use(express.static(path.join(__dirname, "public"))); // this allows us to serve static files like css files
+app.use("/images", express.static(path.join(__dirname, "images"))); // this allows us to serve static images
 
 //urlencoded is a function that returns a middleware function
 app.use(bodyParser.urlencoded({ extended: false }));
