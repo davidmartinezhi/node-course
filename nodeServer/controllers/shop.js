@@ -250,6 +250,13 @@ exports.getInvoice = (req, res, next) => {
         return next(new Error("Unauthorized"));
       }
 
+      /*
+      Files can be
+        - Generated on the fly
+        - Stored in memory before sending
+        - Streamed
+      */
+
       //create a pdf document
       const pdfDoc = new PDFDocument(); // this will create a new pdf document, this is a readable stream
 
