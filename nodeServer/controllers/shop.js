@@ -133,8 +133,8 @@ exports.postCartDeleteProduct = (req, res, next) => {
 
 exports.postOrder = async (req, res, next) => {
   try {
-    const cart = await req.user.getCart();
-    // console.log(cart.items);
+    let cart = await req.user.getCart();
+    cart = await cart.populate("items.productId").execPopulate(); // this will populate the product id in the cart
 
     const products = cart.items.map((i) => {
       return { quantity: i.quantity, product: { ...i.productId._doc } };
@@ -158,6 +158,7 @@ exports.postOrder = async (req, res, next) => {
   } catch (err) {
     const error = new Error(err);
     error.httpStatusCode = 500;
+    console.log(err);
 
     // this will skip all the other middlewares ang go to the error handling middleware
     return next(error);
@@ -254,7 +255,10 @@ exports.getInvoice = (req, res, next) => {
 
       //we set the headers
       res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", 'inline; filename="' + invoiceName + '"'); // this will force the download
+      res.setHeader(
+        "Content-Disposition",
+        'inline; filename="' + invoiceName + '"'
+      ); // this will force the download
 
       //readable stream can be piped into a writeable stream
       //this ensures pdf is also stored in the server
@@ -264,7 +268,18 @@ exports.getInvoice = (req, res, next) => {
       //this will add the content to the pdf document
       pdfDoc.fontSize(26).text("Invoice");
 
-      pdfDoc.text("-----------------------");
+      let totalPrice = 0;
+      console.log("order products: ", order.products);
+      order.products.forEach((prod) => {
+        totalPrice += prod.quantity * prod.product.price;
+        pdfDoc
+          .text(
+            `${prod.product.title} - ${prod.quantity} x $${prod.product.price}`
+          );
+      });
+
+      pdfDoc.text(`Total price: ${totalPrice}`);
+
       pdfDoc.end(); // this will end the pdf document
 
       //if we have an order and the user is the owner, we send the file
@@ -296,8 +311,7 @@ exports.getInvoice = (req, res, next) => {
       //node never has to preload the entire file into memory
       //it just streams it to the client on the flight
       //the most it has to store is one chunk of data, we foward them to the browser and it concatenates the chunks
-      // file.pipe(res); //readable stream can be piped to writeable stream(res) and vice versa 
-
+      // file.pipe(res); //readable stream can be piped to writeable stream(res) and vice versa
     })
     .catch((err) => {
       return next(err);
