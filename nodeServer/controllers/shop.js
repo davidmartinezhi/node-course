@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const Product = require("../models/product");
 const Order = require("../models/order");
+const PDFDocument = require("pdfkit");
 
 /**
  * Get all products and render the product list view.
@@ -248,6 +249,24 @@ exports.getInvoice = (req, res, next) => {
         return next(new Error("Unauthorized"));
       }
 
+      //create a pdf document
+      const pdfDoc = new PDFDocument(); // this will create a new pdf document, this is a readable stream
+
+      //we set the headers
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", 'inline; filename="' + invoiceName + '"'); // this will force the download
+
+      //readable stream can be piped into a writeable stream
+      //this ensures pdf is also stored in the server
+      pdfDoc.pipe(fs.createWriteStream(invoicePath)); // this will pipe the pdf document to a writeable stream
+      pdfDoc.pipe(res); // this will pipe the pdf document to the response
+
+      //this will add the content to the pdf document
+      pdfDoc.fontSize(26).text("Invoice");
+
+      pdfDoc.text("-----------------------");
+      pdfDoc.end(); // this will end the pdf document
+
       //if we have an order and the user is the owner, we send the file
       //for big files, we can use streams.
       //streaming is better because we dont have to load the entire file into memory
@@ -267,17 +286,17 @@ exports.getInvoice = (req, res, next) => {
       // });
 
       //streaming the file
-      const file = fs.createReadStream(invoicePath); // this will create a read stream
+      // const file = fs.createReadStream(invoicePath); // this will create a read stream
 
       //we set the headers
-      res.setHeader("Content-Type", "application/pdf");
+      // res.setHeader("Content-Type", "application/pdf");
 
       //we pipe the file to the response
       //for large files this is a huge advantage
       //node never has to preload the entire file into memory
       //it just streams it to the client on the flight
       //the most it has to store is one chunk of data, we foward them to the browser and it concatenates the chunks
-      file.pipe(res); //readable stream can be piped to writeable stream(res) and vice versa 
+      // file.pipe(res); //readable stream can be piped to writeable stream(res) and vice versa 
 
     })
     .catch((err) => {
