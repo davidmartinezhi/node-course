@@ -1,4 +1,5 @@
 const Product = require("../models/product");
+const fileHelper = require("../util/file");
 const { validationResult } = require("express-validator");
 /**
  * Renders the add product page.
@@ -209,7 +210,8 @@ exports.postEditProduct = async (req, res, next) => {
 
     //check if we have an image
     if (image) {
-      product.imageUrl = image.path;
+      fileHelper.deleteFile(product.imageUrl); // this will delete the old image. this function is a fire and forget
+      product.imageUrl = image.path; // this will update the image path
     }
 
     await product.save(); // this will save the updated product to the database
@@ -226,14 +228,25 @@ exports.postEditProduct = async (req, res, next) => {
 
 exports.postDeleteProduct = async (req, res, next) => {
   const prodId = req.body.productId; // this will extract the product id from the request body
-
   try {
+
+    //delete the image associated with the product
+    const product = await Product.findById(prodId); // this will get the product from the database
+
+    if(!product) { //if product is not set
+      return next(new Error("Product not found"));
+    }
+
+    fileHelper.deleteFile(product.imageUrl); // this will delete the image associated with the product
+
+    //delete the product from the database
     await Product.findOneAndDelete({ _id: prodId, userId: req.user._id }); // this will delete the product from the database
     console.log("Destroyed Product"); // this will log a message to the console
     res.redirect("/admin/products"); // this will redirect to the products page
   } catch (err) {
     const error = new Error(err);
     error.httpStatusCode = 500;
+    console.log(err);
 
     // this will skip all the other middlewares ang go to the error handling middleware
     return next(error);
