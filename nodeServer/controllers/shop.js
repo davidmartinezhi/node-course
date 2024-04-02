@@ -267,12 +267,14 @@ exports.getInvoice = (req, res, next) => {
 
       //this will add the content to the pdf document
       pdfDoc.fontSize(26).text("Invoice");
+      pdfDoc.fontSize(14).text("-----------------------");
 
       let totalPrice = 0;
       console.log("order products: ", order.products);
       order.products.forEach((prod) => {
         totalPrice += prod.quantity * prod.product.price;
         pdfDoc
+        .fontSize(14)
           .text(
             `${prod.product.title} - ${prod.quantity} x $${prod.product.price}`
           );
