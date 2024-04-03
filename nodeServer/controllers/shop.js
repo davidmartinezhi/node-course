@@ -4,6 +4,8 @@ const Product = require("../models/product");
 const Order = require("../models/order");
 const PDFDocument = require("pdfkit");
 
+const ITEMS_PER_PAGE = 2;
+
 /**
  * Get all products and render the product list view.
  * @param {Object} req - The request object.
@@ -37,8 +39,13 @@ exports.getProducts = (req, res, next) => {
  * @param {Function} next - The next middleware function.
  */
 exports.getIndex = (req, res, next) => {
+
+  const page = req.query.page; // this will get the page from the query parameters
+
   // this will fetch all the products with sequelize
   Product.find()
+    .skip((page - 1) * ITEMS_PER_PAGE) // this will skip the products, PAGE 1: 0 * 2 = 0, PAGE 2: 1 * 2 = 2, we are skipping those previous items
+    .limit(ITEMS_PER_PAGE) // this will limit the products to just 2
     .then((products) => {
       res.render("shop/index", {
         prods: products,
