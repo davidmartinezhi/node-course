@@ -13,14 +13,34 @@ const ITEMS_PER_PAGE = 2;
  * @param {Function} next - The next middleware function.
  */
 exports.getProducts = (req, res, next) => {
-  Product.find() // this will return all the products automatically
+  const page = +req.query.page || 1; // this will get the page from the query parameters
+
+  let totalItems;
+
+  //get the number of products
+  Product.find()
+    .countDocuments()
+    .then((numProducts) => {
+      // this will get the number of products
+
+      console.log("number of products: ", numProducts);
+      totalItems = numProducts; // this will store the number of products
+      return Product.find() // this will return all the products automatically
+        .skip((page - 1) * ITEMS_PER_PAGE) // this will skip the products, PAGE 1: 0 * 2 = 0, PAGE 2: 1 * 2 = 2, we are skipping those previous items
+        .limit(ITEMS_PER_PAGE); // this will limit the products to just 2
+    })
     .then((products) => {
-      console.log(products);
+      //once we have the products, we render the view
       res.render("shop/product-list", {
         prods: products,
-        pageTitle: "All Products",
+        pageTitle: "Products",
         path: "/products",
-        isAuthenticated: req.session.isLoggedIn,
+        currentPage: page,
+        hasNextPage: ITEMS_PER_PAGE * page < totalItems, // this will check if we have a next page
+        hasPreviousPage: page > 1, // this will check if we have a previous page
+        nextPage: page + 1, // this will store the next page
+        previousPage: page - 1, // this will store the previous page
+        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE), // this will store the last page
       });
     })
     .catch((err) => {
@@ -46,15 +66,17 @@ exports.getIndex = (req, res, next) => {
   //get the number of products
   Product.find()
     .countDocuments()
-    .then((numProducts) => { // this will get the number of products
+    .then((numProducts) => {
+      // this will get the number of products
 
       console.log("number of products: ", numProducts);
       totalItems = numProducts; // this will store the number of products
       return Product.find() // this will return all the products automatically
         .skip((page - 1) * ITEMS_PER_PAGE) // this will skip the products, PAGE 1: 0 * 2 = 0, PAGE 2: 1 * 2 = 2, we are skipping those previous items
-        .limit(ITEMS_PER_PAGE) // this will limit the products to just 2
+        .limit(ITEMS_PER_PAGE); // this will limit the products to just 2
     })
-    .then((products) => { //once we have the products, we render the view
+    .then((products) => {
+      //once we have the products, we render the view
       res.render("shop/index", {
         prods: products,
         pageTitle: "Shop",
@@ -66,7 +88,8 @@ exports.getIndex = (req, res, next) => {
         previousPage: page - 1, // this will store the previous page
         lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE), // this will store the last page
       });
-    }).catch((err) => {
+    })
+    .catch((err) => {
       const error = new Error(err);
       error.httpStatusCode = 500;
       console.log(err);
