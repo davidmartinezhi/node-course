@@ -238,12 +238,35 @@ exports.getOrders = async (req, res, next) => {
  * @param {Object} res - The response object.
  * @param {Function} next - The next middleware function.
  */
-exports.getCheckout = (req, res, next) => {
-  res.render("shop/checkout", {
-    pageTitle: "Checkout",
-    path: "/checkout",
-    isAuthenticated: req.session.isLoggedIn,
-  });
+exports.getCheckout = async (req, res, next) => {
+
+  try {
+    let cart = await req.user.getCart();
+    console.log("cart: " + cart);
+    cart = await cart.populate("items.productId").execPopulate()
+
+    const products = cart.items;
+    let total = 0;
+
+    products.forEach((p) => {
+      total += +p.quantity * +p.productId.price;
+    });
+
+    res.render("shop/checkout", {
+      pageTitle: "Checkout",
+      path: "/checkout",
+      products: products,
+      isAuthenticated: req.session.isLoggedIn,
+      totalSum: total
+    });
+  } catch (err) {
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    console.log(err);
+
+    // this will skip all the other middlewares ang go to the error handling middleware
+    return next(error);
+  }
 };
 
 exports.getProduct = (req, res, next) => {
