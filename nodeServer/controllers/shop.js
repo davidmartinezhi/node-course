@@ -68,8 +68,6 @@ exports.getIndex = (req, res, next) => {
     .countDocuments()
     .then((numProducts) => {
       // this will get the number of products
-
-      console.log("number of products: ", numProducts);
       totalItems = numProducts; // this will store the number of products
       return Product.find() // this will return all the products automatically
         .skip((page - 1) * ITEMS_PER_PAGE) // this will skip the products, PAGE 1: 0 * 2 = 0, PAGE 2: 1 * 2 = 2, we are skipping those previous items

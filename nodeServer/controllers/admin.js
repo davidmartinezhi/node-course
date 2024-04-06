@@ -226,8 +226,10 @@ exports.postEditProduct = async (req, res, next) => {
   }
 };
 
-exports.postDeleteProduct = async (req, res, next) => {
-  const prodId = req.body.productId; // this will extract the product id from the request body
+exports.deleteProduct = async (req, res, next) => {
+  const prodId = req.params.productId; // this will extract the product id from the request body
+
+
   try {
 
     //delete the image associated with the product
@@ -242,14 +244,11 @@ exports.postDeleteProduct = async (req, res, next) => {
     //delete the product from the database
     await Product.findOneAndDelete({ _id: prodId, userId: req.user._id }); // this will delete the product from the database
     console.log("Destroyed Product"); // this will log a message to the console
-    res.redirect("/admin/products"); // this will redirect to the products page
-  } catch (err) {
-    const error = new Error(err);
-    error.httpStatusCode = 500;
-    console.log(err);
+    
+    res.status(200).json({message: "Success!"}); // this will send a json response to the client
 
-    // this will skip all the other middlewares ang go to the error handling middleware
-    return next(error);
+  } catch (err) {
+    return res.status(500).json({message: "Deleting product failed"}); // this will send a json response to the client
   }
 };
 
