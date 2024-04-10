@@ -1,0 +1,26 @@
+Rest principles
+
+main
+---
+Uniform Interface. 
+Clear defined API Endpoints qith clearly defined requests
++ response structure. It should be predictable.
+
+Stateless interaction. 
+Client and server dont store any connection history,
+every request is handled separately.
+
+secondary
+---
+Cacheable. 
+server may set cache headers to allow the client to cache responses
+
+Client-server. 
+Client and server are separated, client is not connected 
+with persistent data storage.
+
+Layered system
+Sever may foward requests to other APIs 
+
+Code on demand
+Executable code may be transferred from server to client
