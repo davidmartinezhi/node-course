@@ -1,5 +1,6 @@
 <%- include('../includes/head.ejs') %>
     <link rel="stylesheet" href="/css/cart.css">
+    <script src="https://js.stripe.com/v3/"></script>
     </head>
 
     <body>
@@ -15,6 +16,35 @@
             </ul>
             <div class="centered">
                 <h2>Total: $<%= totalSum %></h2>
+            </div>
+            <div class="centered">
+                <button id="order-btn" class="btn">
+                    Order Now!
+                </button>
+                <!-- <script>
+                    var stripe = Stripe('pk_test_51P3pI7RrKmzvrV0AWFjcBm1ABExAOk8eNkA7QBu4rYoIWQGW7ur9YnjNMJjX8I0ITGffADaYnSKHgOUBm4RaM3Ah00OkeDNMcW');
+                    var orderBtn = document.getElementById('order-btn');
+                    orderBtn.addEventListener('click', function () {
+                        stripe.redirectToCheckout({
+                            sessionId: '<%= sessionId %>'
+                        });
+                    });
+                </script> -->
+                <script>
+                    var stripe = Stripe('pk_test_51P3pI7RrKmzvrV0AWFjcBm1ABExAOk8eNkA7QBu4rYoIWQGW7ur9YnjNMJjX8I0ITGffADaYnSKHgOUBm4RaM3Ah00OkeDNMcW');
+                    var orderBtn = document.getElementById('order-btn');
+                    orderBtn.addEventListener('click', function (event) {
+                        event.preventDefault(); // Esto evita la recarga de la página.
+                        stripe.redirectToCheckout({
+                            sessionId: '<%= sessionId %>'
+                        }).then(function (result) {
+                            // Opcionalmente maneja errores
+                            if (result.error) {
+                                alert(result.error.message);
+                            }
+                        });
+                    });
+                </script>
             </div>
         </main>
         <%- include('../includes/end.ejs') %>

@@ -3,6 +3,8 @@ const path = require("path");
 const Product = require("../models/product");
 const Order = require("../models/order");
 const PDFDocument = require("pdfkit");
+const env = require("dotenv").config();
+const stripe = require("stripe")(env.parsed.STRIPE_KEY);
 
 const ITEMS_PER_PAGE = 2;
 
@@ -207,6 +209,7 @@ exports.postOrder = async (req, res, next) => {
   }
 };
 
+
 /**
  * Render the orders view.
  * @param {Object} req - The request object.
@@ -239,7 +242,6 @@ exports.getOrders = async (req, res, next) => {
  * @param {Function} next - The next middleware function.
  */
 exports.getCheckout = async (req, res, next) => {
-
   try {
     let cart = await req.user.getCart();
     console.log("cart: " + cart);
@@ -252,13 +254,70 @@ exports.getCheckout = async (req, res, next) => {
       total += +p.quantity * +p.productId.price;
     });
 
-    res.render("shop/checkout", {
-      pageTitle: "Checkout",
-      path: "/checkout",
-      products: products,
-      isAuthenticated: req.session.isLoggedIn,
-      totalSum: total
+    //we pass an object with the session details
+    const session = await stripe.checkout.sessions.create({
+      line_items: products.map(p => {
+        return  {
+            price_data: {
+              currency: "usd",
+              unit_amount: parseInt(Math.ceil(p.productId.price * 100)),
+              product_data: {
+                name: p.productId.title,
+                description: p.productId.description,
+              },
+            },
+            quantity: p.quantity,
+          }
+        }),
+        mode: "payment",
+        success_url: req.protocol + "://" + req.get("host") + "/checkout/success",// => http://localhost:3000, this will redirect to the success page
+        cancel_url: req.protocol + "://" + req.get("host") + "/checkout/cancel",
+  });
+
+  res.redirect(303, session.url);
+    // res.render("shop/checkout", {
+    //   pageTitle: "Checkout",
+    //   path: "/checkout",
+    //   products: products,
+    //   isAuthenticated: req.session.isLoggedIn,
+    //   totalSum: total,
+    //   sessionId: session.id
+    // });
+  } catch (err) {
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    console.log(err);
+
+    // this will skip all the other middlewares ang go to the error handling middleware
+    return next(error);
+  }
+};
+
+
+exports.getCheckoutSuccess = async (req, res, next) => {
+  try {
+    let cart = await req.user.getCart();
+    cart = await cart.populate("items.productId").execPopulate(); // this will populate the product id in the cart
+
+    const products = cart.items.map((i) => {
+      return { quantity: i.quantity, product: { ...i.productId._doc } };
+    }); // this will get the products in the expected format
+    // console.log("====================================");
+    // console.log(products);
+
+    const order = new Order({
+      user: {
+        email: req.user.email, // this will store the user name
+        userId: req.user, // this will store the user id
+      },
+      products: products, // this will store the products in the cart
     });
+
+    await order.save(); // this will save the order to the database
+
+    await req.user.clearCart(); // this will clear the users cart
+
+    res.redirect("/orders"); // this will redirect to the orders page
   } catch (err) {
     const error = new Error(err);
     error.httpStatusCode = 500;
