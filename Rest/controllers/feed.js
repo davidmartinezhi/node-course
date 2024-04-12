@@ -3,7 +3,6 @@ const { validationResult } = require("express-validator");
 const Post = require("../models/post");
 
 module.exports = class ControllerFeed {
-    
   static getPosts = async (req, res, next) => {
     try {
       const posts = await Post.find();
@@ -27,24 +26,35 @@ module.exports = class ControllerFeed {
   };
 
   static createPost = async (req, res, next) => {
-    const title = req.body.title;
-    const content = req.body.content;
-
-    //validate input errors
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      const error = new Error("Validation failed, entered data is incorrect.");
-      error.statusCode = 422;
-      next(error); // this will throw an error
-    }
-
     try {
+      //validate input errors
+      const errors = validationResult(req);
+
+      if (!errors.isEmpty()) {
+        const error = new Error(
+          "Validation failed, entered data is incorrect."
+        );
+        error.statusCode = 422;
+        next(error); // this will throw an error
+      }
+
+      // Check if an image was provided
+      if (!req.file) {
+        const error = new Error("No image provided.");
+        error.statusCode = 422;
+        next(error); // this will throw an error
+      }
+
+      //Extract data from the request
+      const title = req.body.title;
+      const content = req.body.content;
+      const imageUrl = req.file.path;
+
       //Create new post
       const post = await new Post({
         title: title,
         content: content,
-        imageUrl: "images/dog.png",
+        imageUrl: imageUrl,
         creator: { name: "David" },
       });
 
@@ -54,9 +64,9 @@ module.exports = class ControllerFeed {
         next(error); // this will throw an error
       }
 
-      await post.save(); // this will save the post in the database
+      const savedPost = await post.save(); // this will save the post in the database
 
-      if (!post) {
+      if (!savedPost) {
         const error = new Error("Could not save post.");
         error.statusCode = 404;
         next(error); // this will throw an error
