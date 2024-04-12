@@ -1,3 +1,5 @@
+const { validationResult } = require("express-validator");
+
 module.exports = class ControllerFeed {
   static getPosts = (req, res, next) => {
     // we return a json object with a posts array that contains an object with a title and content
@@ -18,6 +20,17 @@ module.exports = class ControllerFeed {
   static createPost = (req, res, next) => {
     const title = req.body.title;
     const content = req.body.content;
+
+    //validate input errors
+    const errors = validationResult(req);
+
+    if(!errors.isEmpty()) {
+      return res.status(422).json({
+        message: "Validation failed, entered data is incorrect.",
+        errors: errors.array()
+      });
+    }
+
     // Create post in db
     res.status(201).json({
       // 201 is the status code for created
