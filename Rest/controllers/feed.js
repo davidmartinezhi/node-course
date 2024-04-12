@@ -27,14 +27,12 @@ module.exports = class ControllerFeed {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      return res.status(422).json({
-        message: "Validation failed, entered data is incorrect.",
-        errors: errors.array(),
-      });
+      const error = new Error("Validation failed, entered data is incorrect.");
+      error.statusCode = 422;
+      next(error); // this will throw an error
     }
 
     try {
-
       //Create new post
       const post = await new Post({
         title: title,
@@ -43,7 +41,7 @@ module.exports = class ControllerFeed {
         creator: { name: "David" },
       });
 
-        const result = await post.save(); // this will save the post in the database
+      await post.save(); // this will save the post in the database
 
       // 201 is the status code for created, return the post
       res.status(201).json({
@@ -52,11 +50,10 @@ module.exports = class ControllerFeed {
         post: post,
       });
     } catch (err) {
-        console.log(err);
       if (!err.statusCode) {
         err.statusCode = 500;
       }
-      next(err);
+      next(err); // this will throw an error
     }
   };
 };

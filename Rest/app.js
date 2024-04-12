@@ -1,3 +1,4 @@
+const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
@@ -6,6 +7,9 @@ const app = express(); // this will create an express application
 
 //routes
 const feedRoutes = require("./routes/feed");
+
+//public folder
+app.use('/images', express.static(path.join(__dirname,'images'))); // this will allow access to the images folder
 
 //middleware
 //app.user(bodyParser.urlencoded({ extended: false })); // this will parse the body of the incoming request from forms in format x-www-form-urlencoded
@@ -20,6 +24,13 @@ app.use((req, res, next) => {
 });
 
 app.use('/feed', feedRoutes); // this will register the feedRoutes
+
+app.use((error, req, res, next) => { // this will handle errors
+    console.log(error);
+    const status = error.statusCode || 500;
+    const message = error.message;
+    res.status(status).json({ message: message }); // this will return the status and the message
+});
 
 mongoose.connect(
     "mongodb+srv://david:dZiATPxy4lpvAc0e@cluster0.7pba9hx.mongodb.net/messages?retryWrites=true&w=majority", // this will connect to the database
