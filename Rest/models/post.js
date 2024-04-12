@@ -23,4 +23,4 @@ const postSchema = new Schema(
   { timestamps: true } // this will add a createdAt and updatedAt field to the schema
 );
 
-exports.Post = mongoose.model("Post", postSchema); // this will create a model called Post with the schema postSchema
+module.exports = mongoose.model("Post", postSchema); // this will create a model called Post with the schema postSchema
