@@ -1,3 +1,5 @@
+const fs = require("fs");
+const path = require("path");
 const { validationResult } = require("express-validator");
 
 const Post = require("../models/post");
@@ -58,19 +60,7 @@ module.exports = class ControllerFeed {
         creator: { name: "David" },
       });
 
-      if (!post) {
-        const error = new Error("Could not create post.");
-        error.statusCode = 404;
-        next(error); // this will throw an error
-      }
-
-      const savedPost = await post.save(); // this will save the post in the database
-
-      if (!savedPost) {
-        const error = new Error("Could not save post.");
-        error.statusCode = 404;
-        next(error); // this will throw an error
-      }
+      await post.save(); // this will save the post in the database
 
       // 201 is the status code for created, return the post
       res.status(201).json({
@@ -110,5 +100,76 @@ module.exports = class ControllerFeed {
       }
       next(err); // this will throw an error
     }
+  };
+
+  static updatePost = async (req, res, next) => {
+    try {
+      //validate input errors
+      const errors = validationResult(req);
+
+      if (!errors.isEmpty()) {
+        const error = new Error(
+          "Validation failed, entered data is incorrect."
+        );
+        error.statusCode = 422;
+        // next(error); // this will throw an error
+        throw error;
+      }
+
+      // extract postId, title, content, and imageUrl from the request
+      const postId = req.params.postId; // extract postId from the request
+      const title = req.body.title; // extract title from the request
+      const content = req.body.content; // extract content from the request
+      let imageUrl = req.body.image; // extract imageUrl from the request, image is already stored in the database
+
+      // Check if an image was provided, if we are not using an existing image
+      if (req.file) {
+        imageUrl = req.file.path;
+      }
+
+      if (!imageUrl) {
+        const error = new Error("No file picked.");
+        error.statusCode = 422;
+        // next(error); // this will throw an error
+        throw error;
+      }
+
+      // find the post by id
+      let post = await Post.findById(postId);
+
+      // if post is not found
+      if (!post) {
+        const error = new Error("Could not find post.");
+        error.statusCode = 404;
+        // next(error); // this will throw an error
+        throw error;
+      }
+
+      // if imageUrl is different from the post imageUrl
+      if (imageUrl !== post.imageUrl) {
+        this.clearImage(post.imageUrl); // clear the post image
+      }
+
+      // update the post
+      post.title = title; // update the title
+      post.content = content; // update the content
+      post.imageUrl = imageUrl; // update the imageUrl
+
+      await post.save(); // save the post
+
+      // return a json object with a message and the updated post
+      res.status(200).json({
+        message: "Post updated!",
+        post: post,
+      });
+    } catch (err) {
+      err.statusCode = err.statusCode || 500;  // Assign a default error status code if not already set
+      next(err); // this will throw an error
+    }
+  };
+
+  static clearImage = (filePath) => {
+    filePath = path.join(__dirname, "..", filePath);
+    fs.unlink(filePath, (err) => console.log(err));
   };
 };
