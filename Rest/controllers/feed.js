@@ -163,11 +163,38 @@ module.exports = class ControllerFeed {
         post: post,
       });
     } catch (err) {
-      err.statusCode = err.statusCode || 500;  // Assign a default error status code if not already set
+      err.statusCode = err.statusCode || 500; // Assign a default error status code if not already set
       next(err); // this will throw an error
     }
   };
 
+  static deletePost = async (req, res, next) => {
+    try{
+        
+        const postId = req.params.postId; // extract postId from the request
+
+        const post = await Post.findById(postId); // find the post by id
+
+        if (!post) {
+            const error = new Error("Could not find post.");
+            error.statusCode = 404;
+            // next(error); // this will throw an error
+            throw error;
+        }
+
+        await Post.findByIdAndDelete(postId); // remove the post by id
+        this.clearImage(post.imageUrl); // clear the post image
+
+
+        res.status(200).json({message: "Deleted post."}); // return a json object with a message
+
+    }catch(err){
+        err.statusCode = err.statusCode || 500; // Assign a default error status code if not already set
+        next(err);
+    }
+  };
+
+  // Helper function to clear the image
   static clearImage = (filePath) => {
     filePath = path.join(__dirname, "..", filePath);
     fs.unlink(filePath, (err) => console.log(err));
