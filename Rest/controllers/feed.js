@@ -45,7 +45,8 @@ module.exports = class ControllerFeed {
           "Validation failed, entered data is incorrect."
         );
         error.statusCode = 422;
-        next(error); // this will throw an error
+        error.data = errors.array(); // this will store the errors in the error object
+        throw error; // this will throw an error
       }
 
       // Check if an image was provided
@@ -120,6 +121,7 @@ module.exports = class ControllerFeed {
           "Validation failed, entered data is incorrect."
         );
         error.statusCode = 422;
+        error.data = errors.array(); // this will store the errors in the error object
         // next(error); // this will throw an error
         throw error;
       }
