@@ -1,5 +1,6 @@
 const User = require("../models/user");
 const { validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs");
 
 module.exports = class ControllerAuth {
   static async signup(req, res, next) {
@@ -19,12 +20,13 @@ module.exports = class ControllerAuth {
       const email = req.body.email;
       const name = req.body.name;
       const password = req.body.password;
+      const hashedPassword = await bcrypt.hash(password, 12);
 
       // Create a new user
       const user = new User({
         email: email,
         name: name,
-        password: password,
+        password: hashedPassword,
       });
 
       // Save the user
