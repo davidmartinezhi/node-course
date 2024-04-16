@@ -11,6 +11,7 @@ const app = express(); // this will create an express application
 
 //routes
 const feedRoutes = require("./routes/feed");
+const authRoutes = require("./routes/auth");
 
 
 //multer
@@ -59,6 +60,7 @@ app.use((req, res, next) => {
 
 // routes
 app.use("/feed", feedRoutes); // this will register the feedRoutes
+app.use("/auth", authRoutes); // this will register the feedRoutes
 
 app.use((error, req, res, next) => {
   // this will handle errors
