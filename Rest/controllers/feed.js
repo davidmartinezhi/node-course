@@ -3,6 +3,7 @@ const path = require("path");
 const { validationResult } = require("express-validator");
 
 const Post = require("../models/post");
+const User = require("../models/user");
 
 module.exports = class ControllerFeed {
   static getPosts = async (req, res, next) => {
@@ -11,10 +12,9 @@ module.exports = class ControllerFeed {
       const perPage = 2; // set the number of posts per page
       const totalItems = await Post.find().countDocuments(); // count the number of posts
 
-
       const posts = await Post.find() // find all the posts based on the page and perPage
-      .skip((currentPage - 1) * perPage)  // skip the number of posts based on the page and perPage
-      .limit(perPage); // amount of posts to return per page
+        .skip((currentPage - 1) * perPage) // skip the number of posts based on the page and perPage
+        .limit(perPage); // amount of posts to return per page
 
       if (!posts) {
         const error = new Error("Could not find posts.");
@@ -60,22 +60,28 @@ module.exports = class ControllerFeed {
       const title = req.body.title;
       const content = req.body.content;
       const imageUrl = req.file.path;
+      const creator = req.userId; // extract the userId from the request, this is set on is-auth middleware
 
       //Create new post
       const post = await new Post({
         title: title,
         content: content,
         imageUrl: imageUrl,
-        creator: { name: "David" },
+        creator: creator,
       });
 
       await post.save(); // this will save the post in the database
+
+      const user = await User.findById(creator); // find the user by id
+      user.posts.push(post); // push the post to the user posts
+      await user.save(); // save the user
 
       // 201 is the status code for created, return the post
       res.status(201).json({
         // 201 is the status code for created
         message: "Post created successfully!",
         post: post,
+        creator: { _id: user._id, name: user.name },
       });
     } catch (err) {
       if (!err.statusCode) {
