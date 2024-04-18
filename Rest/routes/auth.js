@@ -6,6 +6,8 @@ const router = express.Router();
 const ControllerAuth = require("../controllers/auth");
 const User = require("../models/user");
 
+const isAuth = require("../middleware/is-auth");
+
 // PUT /auth/signup
 router.put(
   "/signup",
@@ -31,5 +33,16 @@ router.put(
 
 // POST /auth/login
 router.post("/login", ControllerAuth.login);
+
+// GET /auth/status
+router.get("/status", isAuth, ControllerAuth.getUserStatus);
+
+// PATCH /auth/status
+router.patch(
+  "/status",
+  isAuth,
+  [body("status").trim().not().isEmpty()],
+  ControllerAuth.updateUserStatus
+);
 
 module.exports = router;
