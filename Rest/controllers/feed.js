@@ -151,13 +151,20 @@ module.exports = class ControllerFeed {
       }
 
       // find the post by id
-      let post = await Post.findByIdAndUpdate(postId);
+      let post = await Post.findById(postId);
 
       // if post is not found
       if (!post) {
         const error = new Error("Could not find post.");
         error.statusCode = 404;
         // next(error); // this will throw an error
+        throw error;
+      }
+
+      // if the user is not the creator of the post
+      if (post.creator.toString() !== req.userId) {
+        const error = new Error("Not authorized!");
+        error.statusCode = 403;
         throw error;
       }
 
@@ -194,6 +201,13 @@ module.exports = class ControllerFeed {
         const error = new Error("Could not find post.");
         error.statusCode = 404;
         // next(error); // this will throw an error
+        throw error;
+      }
+
+      // if the user is not the creator of the post
+      if (post.creator.toString() !== req.userId) {
+        const error = new Error("Not authorized!");
+        error.statusCode = 403;
         throw error;
       }
 
