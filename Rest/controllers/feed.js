@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { validationResult } = require("express-validator");
+const mongoose = require("mongoose");
 
 const Post = require("../models/post");
 const User = require("../models/user");
@@ -192,10 +193,13 @@ module.exports = class ControllerFeed {
   };
 
   static deletePost = async (req, res, next) => {
+    const session = await mongoose.startSession(); // Start a new session
+    session.startTransaction(); // Start a transaction
+
     try {
       const postId = req.params.postId; // extract postId from the request
 
-      const post = await Post.findById(postId); // find the post by id
+      const post = await Post.findById(postId).session(session); // find the post by id
 
       if (!post) {
         const error = new Error("Could not find post.");
@@ -211,11 +215,23 @@ module.exports = class ControllerFeed {
         throw error;
       }
 
-      await Post.findByIdAndDelete(postId); // remove the post by id
+      await Post.findByIdAndDelete(postId).session(session); // remove the post by id
       this.clearImage(post.imageUrl); // clear the post image
+
+      // find the user by id
+      const user = await User.findById(req.userId).session(session); // find the user by id
+      user.posts.pull(postId); // remove the post from the user posts
+      await user.save({ session }); // save the user
+
+      // Commit the transaction
+      await session.commitTransaction();
+      session.endSession(); // End the session
 
       res.status(200).json({ message: "Deleted post." }); // return a json object with a message
     } catch (err) {
+      // If an error, abort the transaction and end session
+      await session.abortTransaction();
+      session.endSession();
       err.statusCode = err.statusCode || 500; // Assign a default error status code if not already set
       next(err);
     }
