@@ -58,9 +58,12 @@ app.use((req, res, next) => {
   next();
 });
 
-// routes
+// hhtp routes
 app.use("/feed", feedRoutes); // this will register the feedRoutes
 app.use("/auth", authRoutes); // this will register the feedRoutes
+
+// socket.io channels
+
 
 app.use((error, req, res, next) => {
   // this will handle errors
@@ -77,7 +80,23 @@ mongoose
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then((result) => {
-    app.listen(8080); // this will start a server on port 3000
+
+    // since server uses http, sockets are built on top of http so it works on our web socket connection
+    const server = app.listen(8080); // this will start a server on port 3000
+
+    //socket io package exposes function which requires our created server (app.listen) as an argument
+    const io = require('socket.io')(server, {
+        cors: {
+            origin: "http://localhost:3000",
+            methods: ["GET", "POST"]
+        }
+    });
+    
+    // event listeners
+    //wait for new connections
+    io.on('connection', socket => {
+        console.log('Client connected');
+    });
   })
   .catch((err) => {
     console.log(err);
