@@ -17,6 +17,7 @@ module.exports = class ControllerFeed {
 
       const posts = await Post.find() // find all the posts based on the page and perPage
         .populate("creator") // populate the creator field
+        .sort({ createdAt: -1 }) // sort the posts by createdAt in descending order
         .skip((currentPage - 1) * perPage) // skip the number of posts based on the page and perPage
         .limit(perPage); // amount of posts to return per page
 
