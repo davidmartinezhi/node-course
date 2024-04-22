@@ -1,0 +1,51 @@
+
+Comparison with REST API
+
+Rest API
+statless, client-independent API for exchanging data
+
+    limitations:
+        returns the complete info. so we need to create distincct endpoints for different information
+            so we will have a lor of endpoints and information
+
+        we could also use query parameters, but we have a dependency
+
+        GraphQL solves this. it has a query that you put into the request we send to the be
+
+GraphQL API 
+stateless, client-independent API for exchanging data with higher query flexibility
+
+We only send one kind of request, one single endpoints which is POST/ GraphQL
+    The post request contains Query Expression to define the data that should be returned
+
+
+Query typically look like json object type structure:
+
+*operation types, we have query (getting data), mutation(updating, deleting, inserting data) and subscription (real time data subscriptions using web sockets)
+*endpoints
+*fields we want to define
+
+Query -> GET
+Mutation -> POST, PUT, PATCH, Update
+Subscription -> set up real time connections via web sockets
+{
+    query{ 
+        user{
+            name
+            age
+        }
+    }
+}
+
+
+In GraphQL
+
+From Client
+->
+server
+-> 
+POST /GraphQL. Type definition, query definition, mutation definition, subscription definition
+->
+Resolvers (functions with server side logic)
+
+Controllers -> Resolvers

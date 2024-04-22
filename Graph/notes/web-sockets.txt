@@ -1,0 +1,19 @@
+web sockets are a protocol that allows to build real time web services
+
+Web sockets built up on http, they use http hanshake to upgrade to socket protocol
+
+We can push data from server to the client.
+
+Web Sockets
+Imagina que tienes un amigo con quien te gusta hablar usando walkie-talkies. Cuando usas walkie-talkies, no necesitas colgar y llamar cada vez que quieras decir algo; simplemente presionas un botón y hablas, y tu amigo puede responder de inmediato. Esto es más o menos cómo funcionan los Web Sockets en internet.
+
+Los Web Sockets permiten que tu computadora (o teléfono, tablet, etc.) hable con un sitio web en tiempo real, sin tener que colgar y llamar de nuevo cada vez que necesitas algo nuevo o quieres enviar un mensaje. Por ejemplo, si estás jugando un juego en línea con otros, los Web Sockets ayudan a que veas lo que están haciendo los demás jugadores al instante, o si estás en un chat, puedes ver los mensajes de tus amigos tan pronto como los envían.
+
+Ejemplo práctico de Web Sockets
+Piensa en un juego en línea como un partido de fútbol virtual donde tú y tus amigos están en diferentes casas. Usando Web Sockets, cuando tú mueves a tu jugador para anotar un gol, tus amigos pueden ver el movimiento de tu jugador inmediatamente en sus computadoras, como si todos estuvieran jugando juntos en el mismo lugar.
+
+Web Sockets son como walkie-talkies para hablar instantáneamente con sitios web y ver lo que hacen otros en tiempo real.
+
+socket.io
+    // emit send message to all connected message
+    // boradcast sends message to all connected clients except the one that sent the message
