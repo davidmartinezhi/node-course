@@ -162,7 +162,7 @@ module.exports = class ControllerFeed {
       }
 
       // find the post by id
-      let post = await Post.findById(postId);
+      let post = await Post.findById(postId).populate("creator"); 
 
       // if post is not found
       if (!post) {
@@ -173,7 +173,7 @@ module.exports = class ControllerFeed {
       }
 
       // if the user is not the creator of the post
-      if (post.creator.toString() !== req.userId) {
+      if (post.creator._id.toString() !== req.userId) {
         const error = new Error("Not authorized!");
         error.statusCode = 403;
         throw error;
@@ -189,12 +189,14 @@ module.exports = class ControllerFeed {
       post.content = content; // update the content
       post.imageUrl = imageUrl; // update the imageUrl
 
-      await post.save(); // save the post
+      const result = await post.save(); // save the post
+
+      io.getIO().emit("posts", { action: "update", post: result }); // emit an update post event
 
       // return a json object with a message and the updated post
       res.status(200).json({
         message: "Post updated!",
-        post: post,
+        post: result,
       });
     } catch (err) {
       err.statusCode = err.statusCode || 500; // Assign a default error status code if not already set
