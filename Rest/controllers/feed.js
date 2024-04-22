@@ -240,6 +240,7 @@ module.exports = class ControllerFeed {
       await session.commitTransaction();
       session.endSession(); // End the session
 
+      io.getIO().emit("posts", { action: "delete", post: postId }); // emit a delete post event
       res.status(200).json({ message: "Deleted post." }); // return a json object with a message
     } catch (err) {
       // If an error, abort the transaction and end session
