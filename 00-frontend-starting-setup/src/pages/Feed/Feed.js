@@ -246,7 +246,7 @@ class Feed extends Component {
       })
       .then((resData) => {
         console.log(resData);
-        this.loadPosts(); //this will reload the posts
+        //this.loadPosts(); //this will reload the posts
         // this.setState((prevState) => {
         //   const updatedPosts = prevState.posts.filter((p) => p._id !== postId);
         //   return { posts: updatedPosts, postsLoading: false };
