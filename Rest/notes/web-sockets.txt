@@ -14,3 +14,6 @@ Piensa en un juego en línea como un partido de fútbol virtual donde tú y tus 
 
 Web Sockets son como walkie-talkies para hablar instantáneamente con sitios web y ver lo que hacen otros en tiempo real.
 
+socket.io
+    // emit send message to all connected message
+    // boradcast sends message to all connected clients except the one that sent the message

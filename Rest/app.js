@@ -85,13 +85,8 @@ mongoose
     const server = app.listen(8080); // this will start a server on port 3000
 
     //socket io package exposes function which requires our created server (app.listen) as an argument
-    const io = require('socket.io')(server, {
-        cors: {
-            origin: "http://localhost:3000",
-            methods: ["GET", "POST"]
-        }
-    });
-    
+    const io = require('./socket').init(server);
+
     // event listeners
     //wait for new connections
     io.on('connection', socket => {

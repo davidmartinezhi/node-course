@@ -6,6 +6,8 @@ const mongoose = require("mongoose");
 const Post = require("../models/post");
 const User = require("../models/user");
 
+const io = require("../socket");
+
 module.exports = class ControllerFeed {
   static getPosts = async (req, res, next) => {
     try {
@@ -14,6 +16,7 @@ module.exports = class ControllerFeed {
       const totalItems = await Post.find().countDocuments(); // count the number of posts
 
       const posts = await Post.find() // find all the posts based on the page and perPage
+        .populate("creator") // populate the creator field
         .skip((currentPage - 1) * perPage) // skip the number of posts based on the page and perPage
         .limit(perPage); // amount of posts to return per page
 
@@ -76,6 +79,13 @@ module.exports = class ControllerFeed {
       const user = await User.findById(creator); // find the user by id
       user.posts.push(post); // push the post to the user posts
       await user.save(); // save the user
+
+      io.getIO().emit("posts", {
+        action: "create",
+        post: { ...post._doc, creator: { _id: req.userId, name: user.name } },
+      }); // emit a new post event
+      // emit send message to all connected message
+      // boradcast sends message to all connected clients except the one that sent the message
 
       // 201 is the status code for created, return the post
       res.status(201).json({
