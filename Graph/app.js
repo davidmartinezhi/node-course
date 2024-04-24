@@ -3,16 +3,12 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const multer = require("multer");
+const {graphqlHTTP} = require("express-graphql");
 
-
+const graphqlSchema = require("./graphql/schema");
+const graphqlResolver = require("./graphql/resolvers");
 
 const app = express(); // this will create an express application
-
-
-//routes
-const feedRoutes = require("./routes/feed");
-const authRoutes = require("./routes/auth");
-
 
 //multer
 const fileStorage = multer.diskStorage({
@@ -31,12 +27,10 @@ const fileFilter = (req, file, cb) => {
     file.mimetype === "image/jpeg"
   ) {
     cb(null, true); // this will accept the file
-  }else{
+  } else {
     cb(null, false); // this will reject the file
   }
 };
-
-
 
 //public folder
 app.use("/images", express.static(path.join(__dirname, "images"))); // this will allow access to the images folder
@@ -44,7 +38,9 @@ app.use("/images", express.static(path.join(__dirname, "images"))); // this will
 //middleware
 //app.user(bodyParser.urlencoded({ extended: false })); // this will parse the body of the incoming request from forms in format x-www-form-urlencoded
 app.use(bodyParser.json()); // this will parse the body of the incoming request
-app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")); // this will parse the file in the incoming request
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
+); // this will parse the file in the incoming request
 
 app.use((req, res, next) => {
   //every response will have these headers
@@ -58,12 +54,13 @@ app.use((req, res, next) => {
   next();
 });
 
-// hhtp routes
-app.use("/feed", feedRoutes); // this will register the feedRoutes
-app.use("/auth", authRoutes); // this will register the feedRoutes
-
-// socket.io channels
-
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    schema: graphqlSchema,
+    rootValue: graphqlResolver,
+  })
+);
 
 app.use((error, req, res, next) => {
   // this will handle errors
@@ -80,18 +77,7 @@ mongoose
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then((result) => {
-
-    // since server uses http, sockets are built on top of http so it works on our web socket connection
-    const server = app.listen(8080); // this will start a server on port 3000
-
-    //socket io package exposes function which requires our created server (app.listen) as an argument
-    const io = require('./socket').init(server);
-
-    // event listeners
-    //wait for new connections
-    io.on('connection', socket => {
-        console.log('Client connected');
-    });
+    app.listen(8080); // this will start a server on port 3000
   })
   .catch((err) => {
     console.log(err);
