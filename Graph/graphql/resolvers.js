@@ -31,21 +31,29 @@ module.exports = {
         throw error;
     }
 
+    // check if user already exists
     const existingUser = await User.findOne({ email: userInput.email });
 
+    // if user exists, throw an error
     if (existingUser) {
       const error = new Error("User exists already!");
       throw error;
     }
+
+    // hash the password
     const hashedPw = await bcrypt.hash(userInput.password, 12);
+
+    // create a new user
     const user = new User({
       email: userInput.email,
       name: userInput.name,
       password: hashedPw,
     });
+
+    // save the user
     const createdUser = await user.save();
     // ...createdUser._doc is a spread operator that copies all properties of createdUser._doc to a new object
     // it is used to remove the metadata from the object and only return the actual data
-    return { ...createdUser._doc, _id: createdUser._id.toString() };
+    return { ...createdUser._doc, _id: createdUser._id.toString() }; // return the created user
   },
 };
