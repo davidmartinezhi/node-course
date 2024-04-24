@@ -59,7 +59,22 @@ app.use(
   graphqlHTTP({
     schema: graphqlSchema,
     rootValue: graphqlResolver,
-    graphiql: true,
+    graphiql: true, // this will allow the use of the graphiql tool
+    formatError(err){
+
+      // original error is set by graphql, when it detects error by my code or 3rd party code
+      // if the error is not set by graphql, then return the error
+      if(!err.originalError){ // for example a missing query
+        return err;
+      }
+
+      const data = err.originalError.data || null;
+      const message = err.message || "An error occurred.";
+      const code = err.originalError.code || 500;
+
+      return {message: message, status: code, data: data};
+
+    }
   })
 );
 
