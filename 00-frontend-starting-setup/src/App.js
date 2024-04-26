@@ -78,17 +78,18 @@ class App extends Component {
         return res.json();
       })
       .then((resData) => {
+        console.log(resData.errors);
 
         // Check if the response has errors for validation
         if (resData.errors && resData.errors[0].status === 422) {
-          throw new Error(
-            "Validation failed."
-          );
+          const errorMessage =
+            resData.errors[0].data[0].message || "Validation failed";
+          throw new Error(errorMessage);
         }
 
         // Check if the response has any errors
         if (resData.errors) {
-          throw new Error("User login failed!");
+          throw new Error(resData.errors[0].message);
         }
 
         console.log(resData);
