@@ -51,6 +51,10 @@ app.use((req, res, next) => {
     "GET, POST, PUT, PATCH, DELETE"
   ); // this will allow the methods that can be used
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization"); // this will allow the headers that can be used
+  
+  if(req.method === "OPTIONS"){
+    return res.sendStatus(200);
+  }
   next();
 });
 
