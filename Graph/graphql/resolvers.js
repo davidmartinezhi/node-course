@@ -59,6 +59,26 @@ module.exports = {
   },
 
   login: async function ({ email, password }) {
+    // validations
+    const errors = []; // to store errors
+    if (!validator.isEmail(email)) { // validate email
+      errors.push({ message: "E-Mail is invalid." });
+    }
+    if ( // validate password
+      validator.isEmpty(password) ||
+      !validator.isLength(password, { min: 5 })
+    ) {
+      errors.push({ message: "Password too short!" });
+    }
+
+    // if there are errors, throw an error
+    if (errors.length > 0) {
+      const error = new Error("Invalid input.");
+      error.data = errors;
+      error.code = 422;
+      throw error;
+    }
+
     // find the user by email
     const user = await User.findOne({ email: email });
     if (!user) {
