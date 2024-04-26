@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const validator = require("validator");
 
 const User = require("../models/user");
+const Post = require("../models/post");
 
 module.exports = {
   createUser: async function ({ userInput }, req) {
@@ -61,10 +62,12 @@ module.exports = {
   login: async function ({ email, password }) {
     // validations
     const errors = []; // to store errors
-    if (!validator.isEmail(email)) { // validate email
+    if (!validator.isEmail(email)) {
+      // validate email
       errors.push({ message: "E-Mail is invalid." });
     }
-    if ( // validate password
+    if (
+      // validate password
       validator.isEmpty(password) ||
       !validator.isLength(password, { min: 5 })
     ) {
@@ -109,5 +112,60 @@ module.exports = {
 
     // return the token and the user id
     return { token: token, userId: user._id.toString() };
+  },
+
+  createPost: async function ({ postInput }, req) {
+    // validations
+    const errors = []; // to store errors
+    if (
+      // validate title
+      validator.isEmail(postInput.title) ||
+      validator.isLength(postInput.title, { min: 5 })
+    ) {
+      errors.push({
+        message: "Title is invalid. It must have at least 5 characters",
+      });
+    }
+    if (
+      // validate content
+      validator.isEmail(postInput.content) ||
+      validator.isLength(postInput.content, { min: 5 })
+    ) {
+      errors.push({
+        message: "Content is invalid. It must have at least 5 characters",
+      });
+    }
+
+    // if there are errors, throw an error
+    if (errors.length > 0) {
+      const error = new Error("Invalid input.");
+      error.data = errors;
+      error.code = 422;
+      throw error;
+    }
+
+    // find the user by id
+    //const user = await User.findById(req.userId);
+
+    // create a new post
+    const post = new Post({
+      title: postInput.title,
+      content: postInput.content,
+      imageUrl: postInput.imageUrl,
+      //creator: req.userId,
+    });
+
+    // save the post
+    const createdPost = await post.save(); // save the post
+
+    // add the post to the user posts
+
+    // return the created post
+    return {
+      ...createdPost._doc,
+      _id: createdPost._id.toString(),
+      createdAt: createdPost.createdAt.toISOString(),
+      updatedAt: createdPost.updatedAt.toISOString(),
+    }; 
   },
 };
