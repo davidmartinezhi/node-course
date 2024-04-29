@@ -126,8 +126,8 @@ module.exports = {
     const errors = []; // to store errors
     if (
       // validate title
-      validator.isEmail(postInput.title) ||
-      validator.isLength(postInput.title, { min: 5 })
+      validator.isEmpty(postInput.title) ||
+      !validator.isLength(postInput.title, { min: 5 })
     ) {
       errors.push({
         message: "Title is invalid. It must have at least 5 characters",
@@ -135,8 +135,7 @@ module.exports = {
     }
     if (
       // validate content
-      validator.isEmail(postInput.content) ||
-      validator.isLength(postInput.content, { min: 5 })
+      !validator.isLength(postInput.content, { min: 5 })
     ) {
       errors.push({
         message: "Content is invalid. It must have at least 5 characters",
@@ -174,6 +173,7 @@ module.exports = {
 
     // push the post to the user posts
     user.posts.push(post);
+    await user.save(); // save the user
 
     // return the created post
     return {
