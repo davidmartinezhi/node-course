@@ -115,7 +115,14 @@ module.exports = {
   },
 
   createPost: async function ({ postInput }, req) {
-    // validations
+    // check if the user is authenticated
+    if (req.isAuth === false) {
+      const error = new Error("Not authenticated!");
+      error.code = 401;
+      throw error;
+    }
+
+    // input validations
     const errors = []; // to store errors
     if (
       // validate title
@@ -145,20 +152,28 @@ module.exports = {
     }
 
     // find the user by id
-    //const user = await User.findById(req.userId);
+    const user = await User.findById(req.userId);
+
+    // if user does not exist, throw an error
+    if (!user) {
+      const error = new Error("Invalid user.");
+      error.code = 401;
+      throw error;
+    }
 
     // create a new post
     const post = new Post({
       title: postInput.title,
       content: postInput.content,
       imageUrl: postInput.imageUrl,
-      //creator: req.userId,
+      creator: user,
     });
 
     // save the post
     const createdPost = await post.save(); // save the post
 
-    // add the post to the user posts
+    // push the post to the user posts
+    user.posts.push(post);
 
     // return the created post
     return {
@@ -166,6 +181,6 @@ module.exports = {
       _id: createdPost._id.toString(),
       createdAt: createdPost.createdAt.toISOString(),
       updatedAt: createdPost.updatedAt.toISOString(),
-    }; 
+    };
   },
 };
