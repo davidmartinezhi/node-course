@@ -55,26 +55,56 @@ class Feed extends Component {
       page--;
       this.setState({ postPage: page });
     }
-    fetch("http://localhost:8080/feed/posts?page=" + page, {
+
+    const graphqlQuery = {
+      query: `
+        {
+          posts
+          {
+            posts 
+            {
+              _id
+              title
+              content
+              imageUrl
+              creator 
+              {
+                name
+              }
+              createdAt
+            }
+            totalPosts
+          }
+        }
+      `,
+    };
+    fetch("http://localhost:8080/graphql", {
+      method: "POST",
       headers: {
         Authorization: "Bearer " + this.props.token, //this is the token that is sent to the server, type of token is Bearer
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify(graphqlQuery),
     })
       .then((res) => {
-        if (res.status !== 200) {
-          throw new Error("Failed to fetch posts.");
-        }
         return res.json();
       })
       .then((resData) => {
+        console.log(resData);
+
+        // Check if the response has any errors
+        if (resData.errors) {
+          throw new Error("Failed to fetch posts.");
+        }
+
         this.setState({
-          posts: resData.posts.map((post) => {
+          posts: resData.data.posts.posts.map((post) => {
             return {
               ...post,
               imagePath: post.imageUrl,
             };
           }),
-          totalPosts: resData.totalItems,
+          totalPosts: resData.data.posts.totalPosts,
           postsLoading: false,
         });
       })
@@ -158,7 +188,7 @@ class Feed extends Component {
       body: JSON.stringify(graphqlQuery),
       headers: {
         Authorization: "Bearer " + this.props.token,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     })
       .then((res) => {

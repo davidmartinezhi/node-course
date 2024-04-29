@@ -183,4 +183,43 @@ module.exports = {
       updatedAt: createdPost.updatedAt.toISOString(),
     };
   },
+
+  posts: async function (args, req) {
+    // Check user authentication
+    if (!req.isAuth) {
+      const error = new Error("Not authenticated!");
+      error.code = 401;
+      throw error;
+    }
+
+    //const currentPage = req.query.page || 1; // extract the page from the request
+    //const perPage = 2; // set the number of posts per page
+    const totalPosts = await Post.find().countDocuments(); // count the number of posts
+
+    // get all posts
+    const posts = await Post.find()
+      .populate("creator") // populate the creator field
+      .sort({ createdAt: -1 }); // sort the posts by createdAt in descending order
+    //.skip((currentPage - 1) * perPage) // skip the number of posts based on the page and perPage
+    //.limit(perPage); // amount of posts to return per page
+
+    // if there are no posts, throw an error
+    if (!posts) {
+      const error = new Error("Could not find posts.");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    let postsData = posts.map((p) => {
+      return {
+        ...p._doc, // spread operator to copy all properties of the post
+        _id: p._id.toString(), // convert the id to string
+        createdAt: p.createdAt.toISOString(), // convert the createdAt to string
+        updatedAt: p.updatedAt.toISOString(), // convert the updatedAt to string
+      };
+    });
+
+    // return the posts
+    return { posts: postsData, totalPosts: totalPosts };
+  },
 };
