@@ -1,9 +1,11 @@
+const fs = require("fs");
 const path = require("path");
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const multer = require("multer");
-const {graphqlHTTP} = require("express-graphql");
+const { graphqlHTTP } = require("express-graphql");
 
 const graphqlSchema = require("./graphql/schema");
 const graphqlResolver = require("./graphql/resolvers");
@@ -52,8 +54,8 @@ app.use((req, res, next) => {
     "GET, POST, PUT, PATCH, DELETE"
   ); // this will allow the methods that can be used
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization"); // this will allow the headers that can be used
-  
-  if(req.method === "OPTIONS"){
+
+  if (req.method === "OPTIONS") {
     return res.sendStatus(200);
   }
   next();
@@ -61,16 +63,38 @@ app.use((req, res, next) => {
 
 app.use(auth); // this runs on every graphql request
 
+
+app.put("/post-image", (req, res, next) => {
+
+  // Check if the user is authenticated
+  if (!req.isAuth) {
+    throw new Error("Not authenticated.");
+  }
+
+  // Check if no image was provided
+  if (!req.file) {
+    return res.status(200).json({ message: "No file provided." });
+  }
+
+  // Check if there is an old image
+  if(req.body.oldPath){
+    clearImage(req.body.oldPath); // this will delete the old image
+  }
+
+  return res.status(201).json({ message: "File stored.", filePath: req.file.path });
+});
+
+
 app.use(
   "/graphql",
   graphqlHTTP({
     schema: graphqlSchema,
     rootValue: graphqlResolver,
     graphiql: true, // this will allow the use of the graphiql tool
-    formatError(err){
-
+    formatError(err) {
       // original error is set by graphql, when it detects error by my code or 3rd party code
-      if(!err.originalError){  // if the error is not set by graphql, then return the error
+      if (!err.originalError) {
+        // if the error is not set by graphql, then return the error
         return err;
       }
 
@@ -79,9 +103,8 @@ app.use(
       const message = err.message || "An error occurred.";
       const code = err.originalError.code || 500;
 
-      return {message: message, status: code, data: data};
-
-    }
+      return { message: message, status: code, data: data };
+    },
   })
 );
 
@@ -94,6 +117,12 @@ app.use((error, req, res, next) => {
   res.status(status).json({ message: message, data: data }); // this will return the status and the message
 });
 
+// Helper function to clear the image
+clearImage = (filePath) => {
+  filePath = path.join(__dirname, "..", filePath);
+  fs.unlink(filePath, (err) => console.log(err));
+};
+
 mongoose
   .connect(
     "mongodb+srv://david:dZiATPxy4lpvAc0e@cluster0.7pba9hx.mongodb.net/messages?retryWrites=true&w=majority", // this will connect to the database
@@ -105,3 +134,4 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
+
