@@ -184,7 +184,7 @@ module.exports = {
     };
   },
 
-  posts: async function (args, req) {
+  posts: async function ({page}, req) {
     // Check user authentication
     if (!req.isAuth) {
       const error = new Error("Not authenticated!");
@@ -192,16 +192,17 @@ module.exports = {
       throw error;
     }
 
-    //const currentPage = req.query.page || 1; // extract the page from the request
-    //const perPage = 2; // set the number of posts per page
+    // Pagination logic
+    const currentPage = page || 1; // extract the page from the request
+    const perPage = 2; // set the number of posts per page
     const totalPosts = await Post.find().countDocuments(); // count the number of posts
 
     // get all posts
     const posts = await Post.find()
       .populate("creator") // populate the creator field
-      .sort({ createdAt: -1 }); // sort the posts by createdAt in descending order
-    //.skip((currentPage - 1) * perPage) // skip the number of posts based on the page and perPage
-    //.limit(perPage); // amount of posts to return per page
+      .sort({ createdAt: -1 }) // sort the posts by createdAt in descending order
+      .skip((currentPage - 1) * perPage) // skip the number of posts based on the page and perPage
+      .limit(perPage); // amount of posts to return per page
 
     // if there are no posts, throw an error
     if (!posts) {
