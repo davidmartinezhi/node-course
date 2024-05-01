@@ -279,7 +279,10 @@ class Feed extends Component {
             editLoading: false,
           };
         });
-      }).catch((err) => {console.log(err);});
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   statusInputChangeHandler = (input, value) => {
@@ -288,21 +291,35 @@ class Feed extends Component {
 
   deletePostHandler = (postId) => {
     this.setState({ postsLoading: true });
-    fetch("http://localhost:8080/feed/post/" + postId, {
-      method: "DELETE",
+
+    const graphqlQuery = {
+      query: `
+        mutation 
+        { 
+          deletePost(id: "${postId}") 
+        }
+      `,
+    };
+
+    fetch("http://localhost:8080/graphql", {
+      method: "POST",
       headers: {
         Authorization: "Bearer " + this.props.token, //this is the token that is sent to the server, type of token is Bearer
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify(graphqlQuery),
     })
       .then((res) => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error("Deleting a post failed!");
-        }
         return res.json();
       })
       .then((resData) => {
         console.log(resData);
-        //this.loadPosts(); //this will reload the posts
+
+        // Check if the response has any errors
+        if (resData.errors) {
+          throw new Error(resData.errors[0].message);
+        }
+        this.loadPosts(); //this will reload the posts
         // this.setState((prevState) => {
         //   const updatedPosts = prevState.posts.filter((p) => p._id !== postId);
         //   return { posts: updatedPosts, postsLoading: false };

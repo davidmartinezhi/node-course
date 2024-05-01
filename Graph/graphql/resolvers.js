@@ -5,6 +5,9 @@ const validator = require("validator");
 const User = require("../models/user");
 const Post = require("../models/post");
 
+const { clearImage } = require("../util/file");
+
+// Helper function to check if the user is authenticated
 const authCheck = (req) => {
   if (!req.isAuth) {
       const error = new Error("Not Authenticated");
@@ -329,4 +332,43 @@ module.exports = {
       updatedAt: updatedPost.updatedAt.toISOString(), // convert the updatedAt to string
     };
   },
+
+  deletePost: async function ({id}, req){
+    // Check user authentication
+    authCheck(req);
+
+    // find the post by id
+    const post = await Post.findById(id).populate("creator");
+
+    // if post does not exist, throw an error
+    if (!post) {
+      const error = new Error("No post found!");
+      error.code = 404;
+      throw error;
+    }
+
+    // find the post creator
+    const creator = post.creator;
+
+    // if the user is not the creator of the post, throw an error
+    if (creator._id.toString() !== req.userId) {
+      const error = new Error("Not authorized!");
+      error.code = 403;
+      throw error;
+    }
+
+    // clear the image
+    clearImage(post.imageUrl);
+
+    // delete the post
+    await Post.findByIdAndDelete(id);
+
+    //remove the post from the user posts
+    creator.posts.pull(id);
+
+    // save the user
+    await creator.save();
+
+    return true;
+  }
 };

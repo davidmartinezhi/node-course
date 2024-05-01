@@ -1,4 +1,3 @@
-const fs = require("fs");
 const path = require("path");
 
 const express = require("express");
@@ -10,6 +9,8 @@ const { graphqlHTTP } = require("express-graphql");
 const graphqlSchema = require("./graphql/schema");
 const graphqlResolver = require("./graphql/resolvers");
 const auth = require("./middleware/auth");
+
+const { clearImage } = require("./util/file");
 
 const app = express(); // this will create an express application
 
@@ -117,11 +118,6 @@ app.use((error, req, res, next) => {
   res.status(status).json({ message: message, data: data }); // this will return the status and the message
 });
 
-// Helper function to clear the image
-clearImage = (filePath) => {
-  filePath = path.join(__dirname, "..", filePath);
-  fs.unlink(filePath, (err) => console.log(err));
-};
 
 mongoose
   .connect(
