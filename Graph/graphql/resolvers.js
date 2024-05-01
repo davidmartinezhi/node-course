@@ -5,6 +5,14 @@ const validator = require("validator");
 const User = require("../models/user");
 const Post = require("../models/post");
 
+const authCheck = (req) => {
+  if (!req.isAuth) {
+      const error = new Error("Not Authenticated");
+      error.code = 401;
+      throw error;
+    }
+}
+
 module.exports = {
   createUser: async function ({ userInput }, req) {
     // const email = args.userInput.email;
@@ -184,7 +192,7 @@ module.exports = {
     };
   },
 
-  posts: async function ({page}, req) {
+  posts: async function ({ page }, req) {
     // Check user authentication
     if (!req.isAuth) {
       const error = new Error("Not authenticated!");
@@ -225,7 +233,6 @@ module.exports = {
   },
 
   post: async function ({ id }, req) {
-
     // Check user authentication
     if (!req.isAuth) {
       const error = new Error("Not authenticated!");
@@ -250,6 +257,76 @@ module.exports = {
       createdAt: post.createdAt.toISOString(),
       updatedAt: post.updatedAt.toISOString(),
     };
+  },
 
+  updatePost: async function ({ id, postInput }, req) {
+    // Check user authentication
+    // if (!req.isAuth) {
+    //   const error = new Error("Not authenticated!");
+    //   error.code = 401;
+    //   throw error;
+    // }
+    authCheck(req);
+
+    // find the post by id, with full user data
+    const post = await Post.findById(id).populate("creator");
+    if (!post) {
+      // if post does not exist, throw an error
+      const error = new Error("No post found!");
+      error.code = 404;
+      throw error;
+    }
+
+    // if the user is not the creator of the post, throw an error
+    if (post.creator._id.toString() !== req.userId) {
+      const error = new Error("Not authorized!");
+      error.code = 403;
+      throw error;
+    }
+
+    // input validations
+    const errors = []; // to store errors
+    if (
+      // validate title
+      validator.isEmpty(postInput.title) ||
+      !validator.isLength(postInput.title, { min: 5 })
+    ) {
+      errors.push({
+        message: "Title is invalid. It must have at least 5 characters",
+      });
+    }
+    if (
+      // validate content
+      !validator.isLength(postInput.content, { min: 5 })
+    ) {
+      errors.push({
+        message: "Content is invalid. It must have at least 5 characters",
+      });
+    }
+
+    // if there are errors, throw an error
+    if (errors.length > 0) {
+      const error = new Error("Invalid input.");
+      error.data = errors;
+      error.code = 422;
+      throw error;
+    }
+
+    // update the post
+    post.title = postInput.title; // update the title
+    post.content = postInput.content; // update the content
+    if (postInput.imageUrl !== "undefined") {
+      post.imageUrl = postInput.imageUrl; // update the imageUrl
+    }
+
+    // save the post
+    const updatedPost = await post.save();
+
+    return {
+      ...updatedPost._doc, // spread operator to copy all properties of the post
+      _id: updatedPost._id.toString(), // convert the id to string
+      createdAt: updatedPost.createdAt.toISOString(), // convert the createdAt to string
+      updatedAt: updatedPost.updatedAt.toISOString(), // convert the updatedAt to string
+    };
   },
 };
