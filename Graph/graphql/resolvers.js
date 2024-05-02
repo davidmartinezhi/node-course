@@ -387,10 +387,6 @@ module.exports = {
     }
 
     // return the user
-    console.log({
-      ...user._doc, // spread operator to copy all properties of the user
-      _id: user._id.toString(), // convert the id to string
-    });
     return {
       ...user._doc, // spread operator to copy all properties of the user
       _id: user._id.toString(), // convert the id to string
