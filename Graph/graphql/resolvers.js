@@ -370,5 +370,55 @@ module.exports = {
     await creator.save();
 
     return true;
-  }
+  },
+
+  user: async function (args, req) {
+    // Check user authentication
+    authCheck(req);
+
+    // find the user by id
+    const user = await User.findById(req.userId);
+
+    // if user does not exist, throw an error
+    if (!user) {
+      const error = new Error("User not found.");
+      error.code = 404;
+      throw error;
+    }
+
+    // return the user
+    console.log({
+      ...user._doc, // spread operator to copy all properties of the user
+      _id: user._id.toString(), // convert the id to string
+    });
+    return {
+      ...user._doc, // spread operator to copy all properties of the user
+      _id: user._id.toString(), // convert the id to string
+    };
+  },
+
+  updateStatus: async function ({ status }, req) {
+    // Check user authentication
+    authCheck(req);
+
+    // find the user by id
+    const user = await User.findById(req.userId);
+
+    // if user does not exist, throw an error
+    if (!user) {
+      const error = new Error("User not found.");
+      error.code = 404;
+      throw error;
+    }
+
+    // update the status
+    user.status = status;
+
+    // save the user
+    await user.save();
+
+    // return the updated user
+    return { ...user._doc, _id: user._id.toString() };
+    
+  },
 };
