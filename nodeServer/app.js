@@ -4,6 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser"); // this is a package that allows us to parse the body of the request
 const mongoose = require("mongoose"); // this is a package that allows us to connect to the database
 const session = require("express-session"); // this is a package that allows us to store the session in the database
+const helmet = require("helmet"); // this is a package that allows us to secure the app by setting various http headers
 
 //session object is passed to the function in order to store the session in the database
 const mongoDBStore = require("connect-mongodb-session")(session); // this is a package that allows us to store the session in the database
@@ -61,6 +62,9 @@ app.set("views", "views"); // this allows us to set any value globally that expr
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
+
+app.use(helmet()); // this will set various http headers to secure the app
+
 
 // serving static files
 app.use(express.static(path.join(__dirname, "public"))); // this allows us to serve static files like css files
