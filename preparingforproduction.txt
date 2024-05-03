@@ -7,3 +7,5 @@
 * Add asset compression (reduce response size/time)
 * Configure Logging (Stay up to date about what's happening)
 * Use SSL/TLS (encrypt data in transit)
+
+TLS is the newer version
