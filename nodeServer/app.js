@@ -11,7 +11,9 @@ const csrf = require("csurf"); //package to create cross site request forgery to
 const flash = require("connect-flash");
 const multer = require("multer"); // this is a package that allows us to parse the body of the request
 const env = require("dotenv").config();
-const uri = env.parsed.MONGODB;
+const uri = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.7pba9hx.mongodb.net/${process.env.MONGO_DEFAULT_DATABASE}?retryWrites=true&w=majority`;
+
+console.log(process.env.NODE_ENV); // this must be set in production to production so express can adjust to production settings
 
 //Controllers
 const errorController = require("./controllers/error");
@@ -138,7 +140,7 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then((result) => {
-    app.listen(3000, () => console.log("Server is running on port 3000"));
+    app.listen(process.env.PORT || 3000);
   })
   .catch((err) => {
     console.log(err);

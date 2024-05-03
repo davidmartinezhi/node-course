@@ -4,7 +4,7 @@ const Product = require("../models/product");
 const Order = require("../models/order");
 const PDFDocument = require("pdfkit");
 const env = require("dotenv").config();
-const stripe = require("stripe")(env.parsed.STRIPE_KEY);
+const stripe = require("stripe")(process.env.STRIPE_KEY);
 
 const ITEMS_PER_PAGE = 2;
 
