@@ -1,0 +1,9 @@
+* Use environment variables (Avoid hard-coded values)
+* Use production API keys
+* Reduce error output details (Don't send source code info to your users)
+* Set secure response headers (implement best practices)
+
+--- this last 3 are usually provided by hosting provider
+* Add asset compression (reduce response size/time)
+* Configure Logging (Stay up to date about what's happening)
+* Use SSL/TLS (encrypt data in transit)
