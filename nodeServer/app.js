@@ -1,4 +1,5 @@
 //const http = require('http'); //without express
+const fs = require("fs"); // this is a core module
 const path = require("path"); // this is a core module
 const express = require("express");
 const bodyParser = require("body-parser"); // this is a package that allows us to parse the body of the request
@@ -6,6 +7,7 @@ const mongoose = require("mongoose"); // this is a package that allows us to con
 const session = require("express-session"); // this is a package that allows us to store the session in the database
 const helmet = require("helmet"); // this is a package that allows us to secure the app by setting various http headers
 const compression = require("compression"); // this is a package that allows us to compress the response
+const morgan = require("morgan"); // this is a package that allows us to log the requests
 
 //session object is passed to the function in order to store the session in the database
 const mongoDBStore = require("connect-mongodb-session")(session); // this is a package that allows us to store the session in the database
@@ -55,7 +57,6 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-
 app.set("view engine", "ejs");
 app.set("views", "views"); // this allows us to set any value globally that express will manage for us
 
@@ -64,8 +65,14 @@ const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
 
+// const accessLogStream = fs.createWriteStream(
+//   path.join(__dirname, "access.log"),
+//   { flags: "a" } // this will append the log to the file
+// );
+
 app.use(helmet()); // this will set various http headers to secure the app
 app.use(compression()); // this will compress the response
+//app.use(morgan("combined", {stream: accessLogStream})); // this will log the requests
 
 // serving static files
 app.use(express.static(path.join(__dirname, "public"))); // this allows us to serve static files like css files
@@ -73,7 +80,9 @@ app.use("/images", express.static(path.join(__dirname, "images"))); // this allo
 
 //urlencoded is a function that returns a middleware function
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(multer({storage: fileStorage, fileFilter: fileFilter}).single("image")); // this will parse the body of the request and store the image in the images folder
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
+); // this will parse the body of the request and store the image in the images folder
 // app.use(cookieParser("cookie-parser-secret"));
 
 app.use(
@@ -97,14 +106,12 @@ app.use((req, res, next) => {
 });
 
 app.use(async (req, res, next) => {
-
   //validate if user is not logged in
   if (!req.session.user) {
     return next(); // we continue
   }
 
   try {
-
     //if user is logged in, we fetch the user from the database
     const user = await User.findById(req.session.user._id);
 
@@ -121,7 +128,6 @@ app.use(async (req, res, next) => {
   }
 });
 
-
 //routes
 app.use("/admin", adminRoutes); // this will register the adminRoutes middleware
 app.use(shopRoutes); // this will register the shopRoutes middleware
@@ -134,8 +140,7 @@ app.use((error, req, res, next) => {
   //error handling middlewares are always read from top to bottom, when we declare various
   // res.redirect("/500"); //this is for redirecting to the error page as fallback
   // res.status(error.httpStatusCode).render(...);
-  res.status(500)
-  .render("500", {
+  res.status(500).render("500", {
     pageTitle: "An Error Ocurred!",
     path: "/500",
     isAuthenticated: req.session.isLoggedIn,
