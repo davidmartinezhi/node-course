@@ -1,0 +1,7 @@
+node_modules
+.env
+nodemon.json
+
+nodeServer/node_modules
+nodeServer/.env
+nodeServer/nodemon.json
