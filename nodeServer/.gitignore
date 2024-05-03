@@ -1,4 +1,8 @@
 node_modules
 .env
 nodemon.json
-access.log
+package-lock.json
+
+# Logs #
+######################
+*.log
