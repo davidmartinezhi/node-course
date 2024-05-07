@@ -1,6 +1,8 @@
 //const http = require('http'); //without express
 const fs = require("fs"); // this is a core module
 const path = require("path"); // this is a core module
+const https = require("https"); // this is a core module
+
 const express = require("express");
 const bodyParser = require("body-parser"); // this is a package that allows us to parse the body of the request
 const mongoose = require("mongoose"); // this is a package that allows us to connect to the database
@@ -32,6 +34,9 @@ const store = new mongoDBStore({
 });
 
 const csrfProtection = csrf("secret"); //we can add object to configure it
+
+// const privatekey = fs.readFileSync("server.key"); // this will read the private key
+// const certificate = fs.readFileSync("server.cert"); // this will read the certificate
 
 //consiguration for multer
 const fileStorage = multer.diskStorage({
@@ -150,7 +155,10 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then((result) => {
-    app.listen(process.env.PORT || 3000);
+    // https // this will create a server with the private key and the certificate
+    //   .createServer({ key: privatekey, cert: certificate }, app) // this will create a server with the private key and the certificate
+    //   .listen(process.env.PORT || 3000); // this will start the server on port 3000
+    app.listen(process.env.PORT || 3000); // this will start the server on port 3000
   })
   .catch((err) => {
     console.log(err);
