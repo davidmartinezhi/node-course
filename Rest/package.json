@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "start": "nodemon app.js",
     "test": "mocha"
@@ -21,7 +20,7 @@
     "socket.io": "^4.7.5"
   },
   "devDependencies": {
-    "chai": "^5.1.0",
+    "chai": "^4.4.1",
     "mocha": "^10.4.0",
     "nodemon": "^3.1.0"
   }
