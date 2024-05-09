@@ -56,7 +56,7 @@ module.exports = class ControllerAuth {
         throw error;
       }
 
-      const isEqual = bcrypt.compare(password, user.password);
+      const isEqual = await bcrypt.compare(password, user.password);
 
       // check if the password is correct
       if (!isEqual) {
@@ -82,7 +82,7 @@ module.exports = class ControllerAuth {
         .json({ token: token, userId: user._id.toString() }); // return the token and the userId
     } catch (err) {
       console.log(err);
-      err.statusCode = 500 || err.statusCode;
+      err.statusCode = err.statusCode || 500;
       next(err);
       //return(err);
     }
