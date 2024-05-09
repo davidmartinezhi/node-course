@@ -84,6 +84,7 @@ module.exports = class ControllerAuth {
       console.log(err);
       err.statusCode = 500 || err.statusCode;
       next(err);
+      //return(err);
     }
   }
 

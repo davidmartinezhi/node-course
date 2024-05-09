@@ -65,7 +65,7 @@ describe("Auth Middleware", () => {
     //     return { userId: "abc" }; // return a userId
     //   };
 
-    sinon.stub(jwt, "verify"); // stub the function. by default it replaces it with empty function and registers function calls 
+    sinon.stub(jwt, "verify"); // stub the function. by default it replaces it with empty function and registers function calls
     jwt.verify.returns({ userId: "abc" }); // return a userId. we configure what we want the function to return
 
     // call the middleware
