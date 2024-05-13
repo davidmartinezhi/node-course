@@ -86,12 +86,18 @@ describe("Feed Controlles - User Create Post", function () {
       // Assert on the response
       expect(res.statusCode).to.equal(201); // 201 is the status code for created
       expect(res.body).to.have.property("post"); // Ensure the response has a post property
-      expect(res.body.post).to.include({ title: "Test Post", content: "This is a test post" });
+      expect(res.body.post).to.include({
+        title: "Test Post",
+        content: "This is a test post",
+      });
       expect(res.body.post.creator.toString()).to.equal(req.userId); // Ensure the creator is the same as the userId
 
+    //   const savedUser = await FeedController.createPost(req, res, () => {});
+    //   expect(savedUser).to.have.property("posts");
+    //   expect(savedUser.posts).to.have.length(2);
     } catch (err) {
-        console.error("Test execution failed:", err);
-        throw new Error("Test failed due to an unexpected error");
+      console.error("Test execution failed:", err);
+      throw new Error("Test failed due to an unexpected error");
     } finally {
       // Restore the stub
       io.getIO.restore();
