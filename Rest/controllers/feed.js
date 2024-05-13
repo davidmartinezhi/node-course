@@ -79,7 +79,7 @@ module.exports = class ControllerFeed {
 
       const user = await User.findById(creator); // find the user by id
       user.posts.push(post); // push the post to the user posts
-      await user.save(); // save the user
+      const savedUser = await user.save(); // save the user
 
       io.getIO().emit("posts", {
         action: "create",
@@ -95,6 +95,8 @@ module.exports = class ControllerFeed {
         post: post,
         creator: { _id: user._id, name: user.name },
       });
+
+      return savedUser;
     } catch (err) {
       if (!err.statusCode) {
         err.statusCode = 500;
