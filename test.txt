@@ -5,3 +5,5 @@ Mocha (Running the tests), to execcute test code
 Chai (Asserting results), to validate the test outcome. for asserting results
 
 Sinon (Managing Side Effects / External dependencies)
+
+Splitting code into more granular functions make it easier mantain and test
