@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const User = require("../models/user");
 const AuthController = require("../controllers/auth");
 
+// Unit test example with a stub
 describe("Auth Controller - Login", function () {
     it("Should handle errors with status code 500 if accessing the database fails", async () => {
         // Prepare request object
@@ -38,6 +39,7 @@ describe("Auth Controller - Login", function () {
       });
 });
 
+// Integration test example with a real database
 describe("Auth Controller - User Status", function () {
   before(async function () {
     await mongoose.connect(
