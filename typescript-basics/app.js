@@ -2,6 +2,12 @@
 const num1Element = document.getElementById('num1');
 const num2Element = document.getElementById('num2');
 const buttonElement = document.querySelector('button'); // ! means that the element is not null
+/*
+GENERIC type
+
+Is a type that interacts with another type, it's a placeholder for a type
+array is outer type and number is inner type
+*/
 const numResults = [];
 const textResults = [];
 function add(num1, num2) {
@@ -30,4 +36,17 @@ buttonElement.addEventListener('click', function () {
     textResults.push(stringResult);
     printResult({ val: result, timestamp: new Date() });
     console.log(numResults, textResults);
+});
+// GENERICS 
+/*
+Promise is a generic type because eventually it resolves to a value
+its the value it resolves to
+*/
+const myPromise = new Promise((resolve, reject) => {
+    setTimeout(() => {
+        resolve('It worked!');
+    }, 1000);
+}); // generic type, we can define what type of data we expect to get back from promise
+myPromise.then(data => {
+    console.log(data.split('w'));
 });
