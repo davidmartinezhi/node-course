@@ -6,7 +6,23 @@ const buttonElement = document.querySelector('button') as HTMLButtonElement;// !
 const numResults: Array<number> = [];
 const textResults: string[] = [];
 
-function add(num1: number | string, num2: number | string): number | string {
+type NumOrString = number | string; // union type, with type alias we can define our own types
+type ResultObj = { val: number, timestamp: Date };
+
+
+/*
+Just to define structure of an object we can use type alias or interface
+but interfaces can force classes to implement functions or properties in objects
+
+If we add class or constructor function, class name can be used as a type as well
+it doesn't matter if you defined it or not, it will be used as a type 
+*/
+interface ResultObj2 { 
+    val: number;
+    timestamp: Date;
+}
+
+function add(num1: NumOrString, num2: NumOrString): NumOrString {
     
     // adding two numbers
     if(typeof num1 === 'number' && typeof num2 === 'number') {
@@ -22,7 +38,7 @@ function add(num1: number | string, num2: number | string): number | string {
     }
 }
 
-function printResult(resultObj: { val: number, timestamp: Date}) {
+function printResult(resultObj: ResultObj) {
     console.log('Result: ' + resultObj.val);
 }
 
