@@ -3,8 +3,20 @@ const num1Element = document.getElementById('num1') as HTMLInputElement;
 const num2Element = document.getElementById('num2') as HTMLInputElement;
 const buttonElement = document.querySelector('button') as HTMLButtonElement;// ! means that the element is not null
 
-function add(num1: number, num2: number): number {
-    return num1 + num2;
+function add(num1: number | string, num2: number | string): number | string {
+    
+    // adding two numbers
+    if(typeof num1 === 'number' && typeof num2 === 'number') {
+        return num1 + num2;
+    }
+    // concatenating two strings
+    else if(typeof num1 === 'string' && typeof num2 === 'string') {
+        return num1 + ' ' + num2;
+    }
+    // mixing number and string
+    else {
+        return +num1 + +num2;
+    }
 }
 
 buttonElement.addEventListener('click', function() {
@@ -12,5 +24,7 @@ buttonElement.addEventListener('click', function() {
     const num2 = num2Element.value;
 
     const result = add(+num1, +num2);
+    const stringResult = add(num1, num2);
     console.log(result);
+    console.log(stringResult);
 });
