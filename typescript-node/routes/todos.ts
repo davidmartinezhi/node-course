@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import { Todo } from "../models/todo";
 
-const todos: Array<Todo> = [];
+let todos: Array<Todo> = [];
 
 const router = Router();
 
@@ -32,6 +32,10 @@ router.put('/todo/:todoId', (req, res, next) => {
     }
 });
 
-
+router.delete('/todo/:todoId', (req, res, next) => {
+    const todoId = req.params.todoId;
+    todos = todos.filter(todoItem => todoItem.id !== todoId);
+    res.status(200).json({message: 'Deleted todo', todos: todos});
+});
 
 export default router;
