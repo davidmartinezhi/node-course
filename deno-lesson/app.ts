@@ -8,6 +8,25 @@ It is secure by default
 With Node, you have all the permissions by default, which is not secure
 */
 
+/*
+Core and features organization
+
+Deno Namespace APIs (built-in utilities)
+    - stable and maintained by core team
+    - built into deno, no need to import
+    - only small set of low-level core functionalities
+
+Standard Library (mantained by deno team) (deno.land/std)
+    - unstable and maintained by core team
+    - not built into deno, but can be imported 
+    - builds up on core APIs, low-level functionalities to make it easier-to-use
+
+Third Party Modules (mantained by the community)
+    -stability differs, maintained by the community
+    - not built into deno, but can be imported
+    - builds up on core APIs, low-level functionalities to make it easier-to-use
+*/
+
 const text = 'This is a text - and it should be stored in a file!';
 
 const encoder = new TextEncoder(); // this object helps us convert text to bites (string to Uint8Array), which is what the file system understands
