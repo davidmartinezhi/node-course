@@ -27,6 +27,10 @@ Third Party Modules (mantained by the community)
     - builds up on core APIs, low-level functionalities to make it easier-to-use
 */
 
+// Deno namespace APIs demonstration
+/**
+deno run --allow-write=message.txt --allow-net app.ts
+*/
 const text = 'This is a text - and it should be stored in a file!';
 
 const encoder = new TextEncoder(); // this object helps us convert text to bites (string to Uint8Array), which is what the file system understands
@@ -35,5 +39,16 @@ const data = encoder.encode(text); // we encode the text to Uint8Array
 Deno.writeFile('message.txt', data).then(() => {
   console.log('Wrote to file!');
 });
+
+// Standard Library demonstration
+// this is not std library anymore
+/*
+deno run --allow-write=message.txt --allow-net app.ts
+*/
+const port = 3000; // port number
+const handler = (_req: Request): Response => new Response("Hello Deno!"); // handler function
+Deno.serve({ port }, handler); // serve the handler function on the port number. This is a simple server
+
+
 
 
