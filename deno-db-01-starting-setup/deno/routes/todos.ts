@@ -1,5 +1,6 @@
 import { Router } from "https://deno.land/x/oak/mod.ts";
 import { cloneState } from "https://deno.land/x/oak@v16.0.0/utils/clone_state.ts";
+import { getDb } from "../helpers/db_client.ts"; // call this function whenever we want to use the database
 
 const router = new Router();
 

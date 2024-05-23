@@ -2,6 +2,9 @@ import { Application } from "https://deno.land/x/oak/mod.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
 
 import todosRoutes from "./routes/todos.ts";
+import { connect } from "./helpers/db_client.ts";
+
+await connect(); // connect to the database
 
 const app = new Application(); // create a new application
 
