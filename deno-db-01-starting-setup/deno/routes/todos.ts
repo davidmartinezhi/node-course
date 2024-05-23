@@ -46,7 +46,7 @@ router.put("/todos/:todoId", async (ctx) => {
 
     const dataText = await ctx.request.body.json(); // get the body text
 
-    todos[todoIndex] = { id: todos[todoIndex].id, text: dataText }; // update the todo
+    todos[todoIndex] = { id: todos[todoIndex].id, text: dataText.text }; // update the todo
     ctx.response.body = { message: "Updated todo!" }; // return message
 });
 
