@@ -19,12 +19,12 @@ app.use(async (ctx, next) => { // next is a function that will be called by oak 
   */
 });
 
-app.use(async (ctx, next) => {
-  ctx.response.headers.set("Access-Control-Allow-Origin", "*"); // set the access control allow origin header
-  ctx.response.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // set the access control allow methods header
-  ctx.response.headers.set("Access-Contol-Allow-Headers", "Content-Type"); // set the access control allow headers header
-  await next(); // call the next middleware
-})
+// app.use(async (ctx, next) => {
+//   ctx.response.headers.set("Access-Control-Allow-Origin", "*"); // set the access control allow origin header
+//   ctx.response.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // set the access control allow methods header
+//   ctx.response.headers.set("Access-Contol-Allow-Headers", "Content-Type"); // set the access control allow headers header
+//   await next(); // call the next middleware
+// })
 
 app.use(
   oakCors({
