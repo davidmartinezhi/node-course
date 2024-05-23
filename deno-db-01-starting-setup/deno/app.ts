@@ -1,4 +1,5 @@
 import { Application } from "https://deno.land/x/oak/mod.ts";
+import { oakCors } from "https://deno.land/x/cors/mod.ts";
 
 import todosRoutes from "./routes/todos.ts";
 
@@ -17,6 +18,19 @@ app.use(async (ctx, next) => { // next is a function that will be called by oak 
   them to finish before we send back the response
   */
 });
+
+app.use(async (ctx, next) => {
+  ctx.response.headers.set("Access-Control-Allow-Origin", "*"); // set the access control allow origin header
+  ctx.response.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE"); // set the access control allow methods header
+  ctx.response.headers.set("Access-Contol-Allow-Headers", "Content-Type"); // set the access control allow headers header
+  await next(); // call the next middleware
+})
+
+app.use(
+  oakCors({
+    origin: "http://localhost:3000",
+  })
+);
 
 app.use(todosRoutes.routes()); // use the todosRoutes
 app.use(todosRoutes.allowedMethods()); // use the allowedMethods

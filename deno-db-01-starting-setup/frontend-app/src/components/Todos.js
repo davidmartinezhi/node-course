@@ -57,7 +57,7 @@ const Todos = () => {
       method = 'PUT';
     }
     const response = await fetch(url, {
-      method,
+      method: method,
       body: JSON.stringify({
         text: enteredText,
       }),

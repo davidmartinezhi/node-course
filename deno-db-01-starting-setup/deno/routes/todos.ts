@@ -28,7 +28,7 @@ router.post("/todos", async (ctx) => {
 
     const newTodo: Todo = {
         id: new Date().toISOString(), 
-        text: dataText
+        text: dataText.text
     };
 
     todos.push(newTodo); // add the new todo to the todos array
